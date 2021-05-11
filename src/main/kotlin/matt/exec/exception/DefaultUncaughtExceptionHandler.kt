@@ -1,13 +1,13 @@
 package matt.exec.exception
 
+import matt.auto.SublimeText
 import matt.exec.exception.DefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
 import matt.exec.exception.DefaultUncaughtExceptionHandler.ExceptionResponse.IGNORE
 import matt.kjlib.MemReport
-import matt.kjlib.SublimeText
 import matt.kjlib.commons.ROOT_FOLDER
+import matt.kjlib.file.get
+import matt.kjlib.file.getNextAndClearWhenMoreThan
 import matt.kjlib.file.text
-import matt.kjlib.get
-import matt.kjlib.getNextAndClearWhenMoreThan
 import java.io.File
 import java.lang.Thread.UncaughtExceptionHandler
 import kotlin.random.Random.Default.nextDouble

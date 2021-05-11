@@ -1,12 +1,12 @@
 package matt.exec.app
 
 //import com.beust.klaxon.Klaxon
+import matt.auto.interapp.port
 import matt.exec.exception.DefaultUncaughtExceptionHandler
 import matt.exec.exception.DefaultUncaughtExceptionHandler.ExceptionResponse
 import matt.exec.exception.DefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
-import matt.auto.interapp.port
 import matt.exec.interapp.InterAppListener
-import matt.kjlib.err
+import matt.kjlib.log.err
 import matt.kjlib.shutdown.beforeShutdown
 import matt.klibexport.klibexport.go
 import matt.reflect.NoArgConstructor
@@ -68,7 +68,7 @@ open class App(
 		  .map { it.findAnnotation<ValidatedOnInit>() }
 		  .filter { it!!.by == validator }
 	  require(refAnnos.size == 1) {
-		"please mark with a @ValidatedOnInit who is validated by the validator ${validator}"
+		"please mark with a @ValidatedOnInit who is validated by the validator $validator"
 	  }
 	}
 
