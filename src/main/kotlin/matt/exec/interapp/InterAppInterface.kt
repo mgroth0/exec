@@ -1,10 +1,10 @@
 package matt.exec.interapp
 
+import matt.auto.activateByPid
 import matt.auto.interapp.InterAppInterface
 import matt.auto.interapp.MY_INTER_APP_SEM
 import matt.auto.interapp.Sender
 import matt.auto.interapp.port
-import matt.auto.osascript
 import matt.exec.app.MY_APP_NAME
 import matt.json.lang.get
 import matt.json.prim.parseJson
@@ -103,14 +103,7 @@ class InterAppListener(name: String, val actions: Map<String, (String)->Unit>) {
 }
 
 
-fun activateByPid(pid: Any) = osascript(
-  """
-        tell application "System Events"
-            set frontmost of the first process whose unix id is $pid to true
-        end tell
-""",
-  nonblocking = true
-)
+
 
 fun activateThisProcess() = activateByPid(ProcessHandle.current().pid())
 
