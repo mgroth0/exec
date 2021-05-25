@@ -46,6 +46,7 @@ open class App(
 	t: Thread,
 	e: Throwable,
 	shutdown: (App.()->Unit)? = null,
+	consumeShutdown: (App.()->Unit)? = null,
 	st: String,
 	exception_file: File
   ): ExceptionResponse {
@@ -55,6 +56,7 @@ open class App(
   protected fun main(
 	alt_app_interface: Map<String, App.(String)->Unit>? = null,
 	shutdown: (App.()->Unit)? = null,
+	consumeShutdown: (App.()->Unit)? = null,
 	prefx: (App.()->Unit)? = null
   ) {
 
@@ -73,6 +75,11 @@ open class App(
 	}
 
 	shutdown?.go { beforeShutdown { it.invoke(this) } }
+	if (shutdown!=null) {
+	  require(consumeShutdown!=null)
+	}
+	/*this is dirty because it doesnt consume the shutdown unless its a gui window close event*/
+	consumeShutdown?.go { beforeShutdown { it.invoke(this) } }
 
 	Thread.setDefaultUncaughtExceptionHandler(
 	  DefaultUncaughtExceptionHandler(
@@ -89,6 +96,7 @@ open class App(
 		},
 		shutdown = {
 		  shutdown?.invoke(this@App)
+		  consumeShutdown?.invoke(this@App)
 		},
 	  )
 	)
