@@ -7,6 +7,7 @@ import matt.exec.exception.DefaultUncaughtExceptionHandler.ExceptionResponse
 import matt.exec.exception.DefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
 import matt.exec.interapp.InterAppListener
 import matt.kjlib.log.err
+import matt.kjlib.resourceTxt
 import matt.kjlib.shutdown.beforeShutdown
 import matt.klibexport.klibexport.go
 import matt.reflect.NoArgConstructor
@@ -15,18 +16,14 @@ import matt.reflect.subclasses
 import matt.reflect.testProtoTypeSucceeded
 import java.io.File
 import kotlin.concurrent.thread
-import kotlin.contracts.ExperimentalContracts
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
-var MY_APP_NAME: String? = null
+val appName = resourceTxt("matt/appname.txt")!!
 
-
-@ExperimentalContracts
 open class App(
-  name: String,
   val args: Array<String>
 ) {
 
@@ -38,7 +35,6 @@ open class App(
 
   init {
 	flow_app = this
-	MY_APP_NAME = name
   }
 
 
@@ -75,8 +71,8 @@ open class App(
 	}
 
 	shutdown?.go { beforeShutdown { it.invoke(this) } }
-	if (shutdown!=null) {
-	  require(consumeShutdown!=null)
+	if (shutdown != null) {
+	  require(consumeShutdown != null)
 	}
 	/*this is dirty because it doesnt consume the shutdown unless its a gui window close event*/
 	consumeShutdown?.go { beforeShutdown { it.invoke(this) } }
@@ -103,7 +99,7 @@ open class App(
 
 
 	if (alt_app_interface != null) {
-	  this.altAppInterface = MY_APP_NAME!! to alt_app_interface
+	  this.altAppInterface = appName to alt_app_interface
 	}
 	if (flow_app!!.altAppInterface != null) {
 	  val nam = flow_app!!.altAppInterface!!.first

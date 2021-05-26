@@ -5,7 +5,7 @@ import matt.auto.interapp.InterAppInterface
 import matt.auto.interapp.MY_INTER_APP_SEM
 import matt.auto.interapp.Sender
 import matt.auto.interapp.port
-import matt.exec.app.MY_APP_NAME
+import matt.exec.app.appName
 import matt.json.lang.get
 import matt.json.prim.parseJson
 import matt.kjlib.byte.readWithTimeout
@@ -103,8 +103,6 @@ class InterAppListener(name: String, val actions: Map<String, (String)->Unit>) {
 }
 
 
-
-
 fun activateThisProcess() = activateByPid(ProcessHandle.current().pid())
 
 @Suppress("unused")
@@ -128,7 +126,6 @@ fun waitFor(service: String, me: String) {
 }
 
 
-
 val WAIT_FOR_MS = VAL_JSON.parseJson().let {
   val theInt: Int = it["WAIT_FOR_MS"]!!
   theInt
@@ -136,4 +133,4 @@ val WAIT_FOR_MS = VAL_JSON.parseJson().let {
 
 
 @Suppress("FunctionName", "unused")
-fun Sender.are_you_running() = are_you_running(MY_APP_NAME!!)
+fun Sender.are_you_running() = are_you_running(appName)
