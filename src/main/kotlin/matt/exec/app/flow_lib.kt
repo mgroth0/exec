@@ -71,9 +71,7 @@ open class App(
 	}
 
 	shutdown?.go { beforeShutdown { it.invoke(this) } }
-	if (shutdown != null) {
-	  require(consumeShutdown != null)
-	}
+	require(consumeShutdown == null || shutdown == null)
 	/*this is dirty because it doesnt consume the shutdown unless its a gui window close event*/
 	consumeShutdown?.go { beforeShutdown { it.invoke(this) } }
 
