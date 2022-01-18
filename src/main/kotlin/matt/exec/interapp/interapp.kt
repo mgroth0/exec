@@ -57,6 +57,9 @@ class InterAppListener(name: String, val actions: Map<String, (String)->Unit>) {
 	  )
 	  MY_INTER_APP_SEM.acquire()
 	  val signal = inReader.readWithTimeout(2000).trim()
+	  if (signal.isBlank()) {
+		println("signal is blank...")
+	  }
 	  if (signal.isNotBlank()) {
 		println("signal: $signal")
 		when (signal) {
