@@ -37,8 +37,7 @@ class InterAppListener(name: String, val actions: Map<String, (String)->Unit>) {
 	println("port was $prt")
 	print("checking lsof...")
 	val s = ProcessBuilder(
-	  "bash",
-	  "lsof -t -i tcp:${prt}"
+	  "bash", "lsof -t -i tcp:${prt}"
 	).start().let { it.inputStream.bufferedReader().readText() + it.errorStream.bufferedReader().readText() }
 	println(" $s")
 	e.printStackTrace()
@@ -87,10 +86,12 @@ class InterAppListener(name: String, val actions: Map<String, (String)->Unit>) {
 
 			  println("told them that im here!")
 			} else {
-			  actions.forEach { action ->
-				if (action.key == key) {
-				  action.value(value)
-				}
+			  val action = actions.entries.firstOrNull { it.key == key }
+			  if (action == null) {
+				println("found no action with key \"$key\"")
+			  } else {
+				println("found action with key \"$key\". executing.")
+				action.value(value)
 			  }
 			}
 		  }
@@ -107,8 +108,7 @@ fun activateThisProcess() = activateByPid(ProcessHandle.current().pid())
 
 @Suppress("unused")
 private class Request(
-  val return_address: String,
-  val key: String
+  val return_address: String, val key: String
 )
 
 
