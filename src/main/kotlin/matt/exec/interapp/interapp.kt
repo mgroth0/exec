@@ -115,11 +115,13 @@ private class Request(
 )
 
 
-fun waitFor(l: ()->Boolean) {
+fun waitFor(sleepPeriod: Long, l: ()->Boolean) {
   while (!l()) {
-	Thread.sleep(WAIT_FOR_MS.toLong())
+	Thread.sleep(sleepPeriod)
   }
 }
+
+fun waitFor(l: ()->Boolean): Unit = waitFor(WAIT_FOR_MS.toLong(), l)
 
 @Suppress("unused")
 fun waitFor(service: String, me: String) {
@@ -129,11 +131,12 @@ fun waitFor(service: String, me: String) {
 }
 
 
-val WAIT_FOR_MS = VAL_JSON.parseJson().let {
-  val theInt: Int = it["WAIT_FOR_MS"]!!
-  theInt
+val WAIT_FOR_MS by lazy {
+  VAL_JSON.parseJson().let {
+	val theInt: Int = it["WAIT_FOR_MS"]!!
+	theInt
+  }
 }
-
 
 @Suppress("FunctionName", "unused")
 fun Sender.are_you_running() = are_you_running(appName)
