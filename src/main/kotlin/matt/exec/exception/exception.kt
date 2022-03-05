@@ -27,6 +27,8 @@ class DefaultUncaughtExceptionHandler(
 ): UncaughtExceptionHandler {
   override fun uncaughtException(t: Thread?, e: Throwable?) {
 
+	  e?.printStackTrace()
+
 	/*dont delete until I find source of disappearing exceptions*/
 	println("in uncaughtException for $e")
 
