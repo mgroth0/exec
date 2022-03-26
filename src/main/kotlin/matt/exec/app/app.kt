@@ -53,9 +53,10 @@ open class App(
 	alt_app_interface: Map<String, App.(String)->Unit>? = null,
 	shutdown: (App.()->Unit)? = null,
 	consumeShutdown: (App.()->Unit)? = null,
-	prefx: (App.()->Unit)? = null
+	prefx: (App.()->Unit)? = null,
+	cfg: (() -> Unit)? = null
   ) {
-
+	cfg?.go { it.invoke() }
 	thread { if (!testProtoTypeSucceeded()) err("bad") }
 	InitValidator::class.subclasses().forEach { validator ->
 	  require(validator.hasAnnotation<NoArgConstructor>()) { "Validators should have @NoArgConstructor" }
