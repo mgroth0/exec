@@ -1,8 +1,8 @@
 package matt.exec.exception
 
 import matt.auto.SublimeText
-import matt.exec.exception.DefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
-import matt.exec.exception.DefaultUncaughtExceptionHandler.ExceptionResponse.IGNORE
+import matt.exec.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
+import matt.exec.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.IGNORE
 import matt.kjlib.MemReport
 import matt.kjlib.commons.FLOW_FOLDER
 import matt.kjlib.file.get
@@ -15,7 +15,7 @@ import kotlin.system.exitProcess
 
 val runtimeID = nextDouble()
 
-class DefaultUncaughtExceptionHandler(
+class MyDefaultUncaughtExceptionHandler(
   val extraShutdownHook: ((
 	t: Thread,
 	e: Throwable,

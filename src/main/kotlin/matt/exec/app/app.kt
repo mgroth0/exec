@@ -2,9 +2,9 @@ package matt.exec.app
 
 //import com.beust.klaxon.Klaxon
 import matt.auto.interapp.port
-import matt.exec.exception.DefaultUncaughtExceptionHandler
-import matt.exec.exception.DefaultUncaughtExceptionHandler.ExceptionResponse
-import matt.exec.exception.DefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
+import matt.exec.exception.MyDefaultUncaughtExceptionHandler
+import matt.exec.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse
+import matt.exec.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
 import matt.exec.interapp.InterAppListener
 import matt.kjlib.log.err
 import matt.kjlib.resourceTxt
@@ -77,7 +77,7 @@ open class App(
 	consumeShutdown?.go { beforeShutdown { it.invoke(this) } }
 
 	Thread.setDefaultUncaughtExceptionHandler(
-	  DefaultUncaughtExceptionHandler(
+	  MyDefaultUncaughtExceptionHandler(
 		extraShutdownHook = { t, e, sd, st, ef ->
 		  this@App.extraShutdownHook(
 			t = t,
