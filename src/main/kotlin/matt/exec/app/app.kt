@@ -44,13 +44,13 @@ open class App(
 	shutdown: (App.()->Unit)? = null,
 	consumeShutdown: (App.()->Unit)? = null,
 	st: String,
-	exception_file: File
+	exceptionFile: File
   ): ExceptionResponse {
 	return EXIT
   }
 
   protected fun main(
-	alt_app_interface: Map<String, App.(String)->Unit>? = null,
+	altAppInterfaceParam: Map<String, App.(String)->Unit>? = null,
 	shutdown: (App.()->Unit)? = null,
 	consumeShutdown: (App.()->Unit)? = null,
 	prefx: (App.()->Unit)? = null,
@@ -86,7 +86,7 @@ open class App(
 			  sd?.invoke()
 			},
 			st = st,
-			exception_file = ef
+			exceptionFile = ef
 		  )
 		},
 		shutdown = {
@@ -97,8 +97,8 @@ open class App(
 	)
 
 
-	if (alt_app_interface != null) {
-	  this.altAppInterface = appName to alt_app_interface
+	if (altAppInterfaceParam != null) {
+	  this.altAppInterface = appName to altAppInterfaceParam
 	}
 	if (flow_app!!.altAppInterface != null) {
 	  val nam = flow_app!!.altAppInterface!!.first
