@@ -1,15 +1,15 @@
 package matt.exec.interapp
 
 import matt.auto.activateByPid
-import matt.auto.interapp.InterAppInterface
-import matt.auto.interapp.MY_INTER_APP_SEM
-import matt.auto.interapp.Sender
-import matt.auto.interapp.port
 import matt.exec.app.appName
 import matt.json.lang.get
-import matt.json.prim.parseJson
-import matt.kjlib.byte.readWithTimeout
-import matt.kjlib.commons.VAL_JSON
+import matt.kbuild.InterAppInterface
+import matt.kbuild.MY_INTER_APP_SEM
+import matt.kbuild.Sender
+import matt.kbuild.VAL_JSON
+import matt.kbuild.parseJson
+import matt.kbuild.port
+import matt.kbuild.readWithTimeout
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.BindException

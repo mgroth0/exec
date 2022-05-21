@@ -3,8 +3,8 @@ package matt.exec.exception
 import matt.auto.SublimeText
 import matt.exec.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
 import matt.exec.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.IGNORE
+import matt.kbuild.FLOW_FOLDER
 import matt.kjlib.MemReport
-import matt.kjlib.commons.FLOW_FOLDER
 import matt.kjlib.file.get
 import matt.kjlib.file.getNextAndClearWhenMoreThan
 import matt.kjlib.file.text
