@@ -34,8 +34,8 @@ fun readSocketLines(
   port: Int,
 ): Sequence<String> {
   val socket = tryCreatingSocket(port)
-  val client = socket.accept()
   return sequence {
+	val client = socket.accept()
 	yieldAll(client.bufferedReader().lineSequence())
 	client.close()
 	socket.close()
