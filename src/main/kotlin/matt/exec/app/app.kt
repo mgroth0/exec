@@ -6,7 +6,7 @@ import matt.exec.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse
 import matt.exec.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
 import matt.exec.interapp.InterAppListener
 import matt.kbuild.socket.port
-import matt.kjlib.log.err
+import matt.kjlib.lang.err
 import matt.kjlib.resourceTxt
 import matt.kjlib.shutdown.beforeShutdown
 import matt.klibexport.klibexport.go
