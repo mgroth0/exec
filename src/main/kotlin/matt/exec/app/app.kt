@@ -5,7 +5,7 @@ import matt.exec.exception.MyDefaultUncaughtExceptionHandler
 import matt.exec.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse
 import matt.exec.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
 import matt.exec.interapp.InterAppListener
-import matt.kbuild.port
+import matt.kbuild.socket.port
 import matt.kjlib.log.err
 import matt.kjlib.resourceTxt
 import matt.kjlib.shutdown.beforeShutdown
@@ -116,7 +116,7 @@ open class App(
 			  flow_app!!.run { handler(arg) }
 			}
 		  }.toMap()
-		).core_loop()
+		).coreLoop()
 	  }
 	}
 	prefx?.invoke(this)

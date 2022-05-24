@@ -3,19 +3,20 @@ package matt.exec.interapp
 import matt.auto.activateByPid
 import matt.exec.app.appName
 import matt.json.lang.get
-import matt.kbuild.InterAppInterface
-import matt.kbuild.MY_INTER_APP_SEM
-import matt.kbuild.Sender
 import matt.kbuild.VAL_JSON
 import matt.kbuild.parseJson
-import matt.kbuild.port
 import matt.kbuild.readWithTimeout
+import matt.kbuild.socket.InterAppInterface
+import matt.kbuild.socket.MY_INTER_APP_SEM
+import matt.kbuild.socket.SingleSender
+import matt.kbuild.socket.port
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.BindException
 import java.net.ServerSocket
 import java.net.Socket
 import kotlin.system.exitProcess
+import matt.kjlib.async.waitFor
 
 
 const val SLEEP_PERIOD = 100.toLong() //ms
@@ -24,39 +25,57 @@ const val PRINT_PERIOD = 10_000 //ms
 @Suppress("unused")
 val I_PERIOD = (PRINT_PERIOD/SLEEP_PERIOD).toInt()
 
+fun Socket.bufferedReader() = BufferedReader(
+  InputStreamReader(getInputStream())
+)
 
-class InterAppListener(name: String, val actions: Map<String, (String)->Unit>) {
-  private val prt = port(name)
-  private val serverSocket = try {
-	print("serving $prt ...")
-	ServerSocket(prt).apply {
+
+fun readSocketLines(
+  port: Int,
+): Sequence<String> {
+  val socket = tryCreatingSocket(port)
+  val client = socket.accept()
+  return sequence {
+	yieldAll(client.bufferedReader().lineSequence())
+	client.close()
+	socket.close()
+  }
+}
+
+fun tryCreatingSocket(port: Int): ServerSocket {
+  return try {
+	print("serving $port ...")
+	ServerSocket(port).apply {
 	  println("started")
 	}
   } catch (e: BindException) {
 	println("")
-	println("port was $prt")
+	println("port was $port")
 	print("checking lsof...")
 	val s = ProcessBuilder(
-	  "bash", "lsof -t -i tcp:${prt}"
+	  "bash", "lsof -t -i tcp:${port}"
 	).start().let { it.inputStream.bufferedReader().readText() + it.errorStream.bufferedReader().readText() }
 	println(" $s")
 	e.printStackTrace()
 	exitProcess(1)
   }
+}
 
-  fun core_loop() {
-	var continue_running = true
+
+class InterAppListener(name: String, val actions: Map<String, (String)->Unit>) {
+  private val prt = port(name)
+  private val serverSocket = tryCreatingSocket(prt)
+
+  fun coreLoop() {
+	var continueRunning = true
 	val debugAllSocksPleaseDontClose = mutableListOf<Socket>()
-	while (continue_running) {
+	while (continueRunning) {
 	  val clientSocket = serverSocket.accept()
 	  debugAllSocksPleaseDontClose.add(clientSocket)
 	  val out = clientSocket.getOutputStream()
 	  println("SOCKET_CHANNEL=${clientSocket.channel}")
-	  val inReader = BufferedReader(
-		InputStreamReader(clientSocket.getInputStream())
-	  )
 	  MY_INTER_APP_SEM.acquire()
-	  val signal = inReader.readWithTimeout(2000).trim()
+	  val signal = clientSocket.bufferedReader().readWithTimeout(2000).trim()
 	  if (signal.isBlank()) {
 		println("signal is blank...")
 	  }
@@ -65,7 +84,7 @@ class InterAppListener(name: String, val actions: Map<String, (String)->Unit>) {
 		when (signal) {
 		  "EXIT"     -> {
 			println("got quit signal")
-			continue_running = false
+			continueRunning = false
 			clientSocket.close()
 			debugAllSocksPleaseDontClose.remove(clientSocket)
 		  }
@@ -76,8 +95,7 @@ class InterAppListener(name: String, val actions: Map<String, (String)->Unit>) {
 			clientSocket.close()
 			debugAllSocksPleaseDontClose.remove(clientSocket)
 		  }
-		  "HERE!"    -> {
-		  }
+		  "HERE!"    -> Unit
 		  else       -> {
 			val key = signal.substringBefore(":")
 			val value = signal.substringAfter(":")
@@ -111,22 +129,15 @@ fun activateThisProcess() = activateByPid(ProcessHandle.current().pid())
 
 @Suppress("unused")
 private class Request(
-  val return_address: String, val key: String
+  val returnAddress: String, val key: String
 )
-
-
-fun waitFor(sleepPeriod: Long, l: ()->Boolean) {
-  while (!l()) {
-	Thread.sleep(sleepPeriod)
-  }
-}
 
 fun waitFor(l: ()->Boolean): Unit = waitFor(WAIT_FOR_MS.toLong(), l)
 
 @Suppress("unused")
 fun waitFor(service: String, me: String) {
   println("waiting for ${service}...")
-  waitFor { InterAppInterface[service].are_you_running(me) != null }
+  waitFor { InterAppInterface[service].areYouRunning(me) != null }
   println("for response from ${service}! moving on")
 }
 
@@ -139,4 +150,4 @@ val WAIT_FOR_MS by lazy {
 }
 
 @Suppress("FunctionName", "unused")
-fun Sender.are_you_running() = are_you_running(appName)
+fun SingleSender.areYouRunning() = areYouRunning(appName)
