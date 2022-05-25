@@ -1,8 +1,8 @@
 package matt.exec.cmd
 
 import matt.exec.app.App
+import matt.kjlib.lang.whileTrue
 import matt.kjlib.str.taball
-import matt.kjlib.whileTrue
 import matt.klibexport.klibexport.go
 
 class CommandLineApp(
