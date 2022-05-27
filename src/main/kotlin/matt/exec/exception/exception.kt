@@ -3,8 +3,8 @@ package matt.exec.exception
 import matt.auto.SublimeText
 import matt.exec.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
 import matt.exec.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.IGNORE
-import matt.kbuild.FLOW_FOLDER
 import matt.kjlib.byte.MemReport
+import matt.kjlib.commons.FLOW_FOLDER
 import matt.kjlib.file.get
 import matt.kjlib.file.getNextAndClearWhenMoreThan
 import matt.kjlib.file.text
@@ -32,7 +32,7 @@ class MyDefaultUncaughtExceptionHandler(
 	/*dont delete until I find source of disappearing exceptions*/
 	println("in uncaughtException for $e")
 
-	val exceptionFolder = FLOW_FOLDER["log"]["exceptions"]
+	val exceptionFolder = FLOW_FOLDER!!["log"]["exceptions"]
 	exceptionFolder.mkdirs()
 
 

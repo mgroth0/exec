@@ -3,13 +3,7 @@ package matt.exec.interapp
 import matt.auto.activateByPid
 import matt.exec.app.appName
 import matt.json.lang.get
-import matt.kbuild.VAL_JSON
 import matt.kbuild.parseJson
-import matt.kbuild.socket.InterAppInterface
-import matt.kbuild.socket.MY_INTER_APP_SEM
-import matt.kbuild.socket.SingleSender
-import matt.kbuild.socket.port
-import matt.kbuild.socket.readWithTimeout
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.BindException
@@ -17,6 +11,12 @@ import java.net.ServerSocket
 import java.net.Socket
 import kotlin.system.exitProcess
 import matt.kjlib.async.waitFor
+import matt.kjlib.commons.VAL_JSON
+import matt.kjlib.socket.InterAppInterface
+import matt.kjlib.socket.MY_INTER_APP_SEM
+import matt.kjlib.socket.SingleSender
+import matt.kjlib.socket.port
+import matt.kjlib.socket.readWithTimeout
 
 
 const val SLEEP_PERIOD = 100.toLong() //ms
