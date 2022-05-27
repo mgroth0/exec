@@ -11,7 +11,7 @@ import java.net.ServerSocket
 import java.net.Socket
 import kotlin.system.exitProcess
 import matt.kjlib.async.waitFor
-import matt.kjlib.commons.VAL_JSON
+import matt.klib.commons.VAL_JSON
 import matt.kjlib.socket.InterAppInterface
 import matt.kjlib.socket.MY_INTER_APP_SEM
 import matt.kjlib.socket.SingleSender
