@@ -5,7 +5,9 @@ import matt.exec.exception.MyDefaultUncaughtExceptionHandler
 import matt.exec.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse
 import matt.exec.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
 import matt.exec.interapp.InterAppListener
+import matt.kbuild.DATA_FOLDER
 import matt.kbuild.socket.port
+import matt.kjlib.file.get
 import matt.kjlib.lang.err
 import matt.kjlib.lang.jlang.resourceTxt
 import matt.kjlib.shutdown.beforeShutdown
@@ -21,7 +23,8 @@ import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
-val appName = resourceTxt("matt/appname.txt")!!
+val appName by lazy { resourceTxt("matt/appname.txt")!! }
+val myDataFolder = DATA_FOLDER[appName]
 
 open class App(
   val args: Array<String>
@@ -54,7 +57,7 @@ open class App(
 	shutdown: (App.()->Unit)? = null,
 	consumeShutdown: (App.()->Unit)? = null,
 	prefx: (App.()->Unit)? = null,
-	cfg: (() -> Unit)? = null
+	cfg: (()->Unit)? = null
   ) {
 	cfg?.go { it.invoke() }
 	thread { if (!testProtoTypeSucceeded()) err("bad") }
@@ -64,8 +67,8 @@ open class App(
 		"$validator did not pass"
 	  }
 	  val refAnnos = ValidatedOnInit::class.annotatedKTypes()
-		  .map { it.findAnnotation<ValidatedOnInit>() }
-		  .filter { it!!.by == validator }
+		.map { it.findAnnotation<ValidatedOnInit>() }
+		.filter { it!!.by == validator }
 	  require(refAnnos.size == 1) {
 		"please mark with a @ValidatedOnInit who is validated by the validator $validator"
 	  }
