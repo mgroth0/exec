@@ -1,5 +1,6 @@
 package matt.exec.interapp
 
+import matt.async.waitFor
 import matt.auto.activateByPid
 import matt.exec.app.appName
 import matt.json.lang.get
@@ -10,7 +11,6 @@ import java.net.BindException
 import java.net.ServerSocket
 import java.net.Socket
 import kotlin.system.exitProcess
-import matt.kjlib.async.waitFor
 import matt.klib.commons.VAL_JSON
 import matt.kjlib.socket.InterAppInterface
 import matt.kjlib.socket.MY_INTER_APP_SEM
