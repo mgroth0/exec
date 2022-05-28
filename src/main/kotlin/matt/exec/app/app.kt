@@ -11,7 +11,7 @@ import matt.kjlib.lang.err
 import matt.kjlib.lang.jlang.resourceTxt
 import matt.kjlib.shutdown.beforeShutdown
 import matt.kjlib.socket.port
-import matt.klibexport.klibexport.go
+import matt.klib.lang.go
 import matt.reflect.NoArgConstructor
 import matt.reflect.annotatedKTypes
 import matt.reflect.subclasses

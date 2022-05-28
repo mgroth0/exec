@@ -4,7 +4,7 @@ import matt.exec.app.App
 import matt.exec.cmd.CommandLineApp.Companion.exitCommands
 import matt.kjlib.lang.whileTrue
 import matt.kjlib.str.taball
-import matt.klibexport.klibexport.go
+import matt.klib.lang.go
 
 class CommandLineApp(
   val welcomeMessage: String? = null,
