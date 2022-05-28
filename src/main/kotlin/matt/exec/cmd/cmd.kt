@@ -2,7 +2,7 @@ package matt.exec.cmd
 
 import matt.exec.app.App
 import matt.exec.cmd.CommandLineApp.Companion.exitCommands
-import matt.kjlib.str.taball
+import matt.klib.str.taball
 import matt.klib.lang.go
 import matt.klib.lang.whileTrue
 
