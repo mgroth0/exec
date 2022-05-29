@@ -1,21 +1,21 @@
 package matt.exec.app
 
 //import com.beust.klaxon.Klaxon
+//import matt.reflect.NoArgConstructor
+//import matt.reflect.testProtoTypeSucceeded
 import matt.exec.exception.MyDefaultUncaughtExceptionHandler
 import matt.exec.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse
 import matt.exec.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
 import matt.exec.interapp.InterAppListener
-import matt.klib.commons.DATA_FOLDER
-import matt.klib.commons.get
 import matt.kjlib.lang.jlang.resourceTxt
 import matt.kjlib.shutdown.beforeShutdown
 import matt.kjlib.socket.port
-import matt.klib.lang.err
+import matt.klib.commons.DATA_FOLDER
+import matt.klib.commons.get
 import matt.klib.lang.go
 import matt.reflect.NoArgConstructor
 import matt.reflect.annotatedKTypes
 import matt.reflect.subclasses
-import matt.reflect.testProtoTypeSucceeded
 import java.io.File
 import kotlin.concurrent.thread
 import kotlin.reflect.KClass
@@ -60,7 +60,7 @@ open class App(
 	cfg: (()->Unit)? = null
   ) {
 	cfg?.go { it.invoke() }
-	thread { if (!testProtoTypeSucceeded()) err("bad") }
+	/*thread { if (!testProtoTypeSucceeded()) err("bad") }*/
 	InitValidator::class.subclasses().forEach { validator ->
 	  require(validator.hasAnnotation<NoArgConstructor>()) { "Validators should have @NoArgConstructor" }
 	  require(validator.createInstance().validate()) {
