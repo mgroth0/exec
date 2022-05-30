@@ -8,6 +8,7 @@ import matt.klib.commons.FLOW_FOLDER
 import matt.klib.commons.get
 import matt.kjlib.file.getNextAndClearWhenMoreThan
 import matt.kjlib.file.text
+import matt.klib.commons.LOG_FOLDER
 import java.io.File
 import java.lang.Thread.UncaughtExceptionHandler
 import kotlin.random.Random.Default.nextDouble
@@ -32,7 +33,7 @@ class MyDefaultUncaughtExceptionHandler(
 	/*dont delete until I find source of disappearing exceptions*/
 	println("in uncaughtException for $e")
 
-	val exceptionFolder = FLOW_FOLDER!!["log"]["exceptions"]
+	val exceptionFolder = LOG_FOLDER["exceptions"]
 	exceptionFolder.mkdirs()
 
 
