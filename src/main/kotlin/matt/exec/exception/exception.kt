@@ -9,7 +9,8 @@ import matt.klib.commons.get
 import matt.kjlib.file.getNextAndClearWhenMoreThan
 import matt.kjlib.file.text
 import matt.klib.commons.LOG_FOLDER
-import java.io.File
+import matt.klib.file.MFile
+
 import java.lang.Thread.UncaughtExceptionHandler
 import kotlin.random.Random.Default.nextDouble
 import kotlin.system.exitProcess
@@ -22,7 +23,7 @@ class MyDefaultUncaughtExceptionHandler(
 	e: Throwable,
 	shutdown: (()->Unit)?,
 	st: String,
-	exception_file: File
+	exception_file: MFile
   )->ExceptionResponse),
   val shutdown: (()->Unit)? = null,
 ): UncaughtExceptionHandler {

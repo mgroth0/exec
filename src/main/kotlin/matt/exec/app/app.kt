@@ -12,11 +12,12 @@ import matt.kjlib.shutdown.beforeShutdown
 import matt.kjlib.socket.port
 import matt.klib.commons.DATA_FOLDER
 import matt.klib.commons.get
+import matt.klib.file.MFile
 import matt.klib.lang.go
 import matt.reflect.NoArgConstructor
 import matt.reflect.annotatedKTypes
 import matt.reflect.subclasses
-import java.io.File
+
 import kotlin.concurrent.thread
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
@@ -47,7 +48,7 @@ open class App(
 	shutdown: (App.()->Unit)? = null,
 	consumeShutdown: (App.()->Unit)? = null,
 	st: String,
-	exceptionFile: File
+	exceptionFile: MFile
   ): ExceptionResponse {
 	return EXIT
   }
