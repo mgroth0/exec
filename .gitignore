@@ -1,6 +1,7 @@
 /build/
 /out/
 *.hprof
+*.zip
 .private
 .gradle/
 /gradle/
