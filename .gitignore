@@ -1,5 +1,6 @@
 /build/
 /out/
+*.hprof
 .private
 .gradle/
 /gradle/
