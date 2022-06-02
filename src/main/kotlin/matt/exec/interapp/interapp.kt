@@ -1,5 +1,14 @@
 package matt.exec.interapp
 
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import matt.async.emitAll
+import matt.async.lineFlow
 import matt.async.waitFor
 import matt.auto.activateByPid
 import matt.exec.app.appName
@@ -17,6 +26,8 @@ import matt.kjlib.socket.MY_INTER_APP_SEM
 import matt.kjlib.socket.SingleSender
 import matt.kjlib.socket.port
 import matt.kjlib.socket.readWithTimeout
+import matt.klib.lang.go
+import java.net.SocketTimeoutException
 
 
 const val SLEEP_PERIOD = 100.toLong() //ms
@@ -29,36 +40,47 @@ fun Socket.bufferedReader() = BufferedReader(
   InputStreamReader(getInputStream())
 )
 
-
-fun readSocketLines(
-  port: Int,
-): Sequence<String> {
-  val socket = tryCreatingSocket(port)
-  return sequence {
-	val client = socket.accept()
-	yieldAll(client.bufferedReader().lineSequence())
-	client.close()
-	socket.close()
+fun ServerSocket.acceptOrTimeout(): Socket? {
+  return try {
+	accept()
+  } catch (e: SocketTimeoutException) {
+	null
   }
 }
 
-fun tryCreatingSocket(port: Int): ServerSocket {
-  return try {
-	print("serving $port ...")
-	ServerSocket(port).apply {
-	  println("started")
+fun readSocketLines(
+  port: Int,
+  delayMS: Long = 100
+) = flow {
+  tryCreatingSocket(port).use { server ->
+	server.soTimeout = delayMS.toInt()
+	server.use {
+	  while (!server.isClosed) {
+		server.acceptOrTimeout()?.go { client ->
+		  emitAll(
+			client.bufferedReader().lineFlow(delayMS = delayMS)
+		  )
+		} ?: delay(delayMS)
+	  }
 	}
-  } catch (e: BindException) {
-	println("")
-	println("port was $port")
-	print("checking lsof...")
-	val s = ProcessBuilder(
-	  "bash", "lsof -t -i tcp:${port}"
-	).start().let { it.inputStream.bufferedReader().readText() + it.errorStream.bufferedReader().readText() }
-	println(" $s")
-	e.printStackTrace()
-	exitProcess(1)
   }
+}
+
+fun tryCreatingSocket(port: Int) = try {
+  print("serving $port ...")
+  ServerSocket(port).apply {
+	println("started")
+  }
+} catch (e: BindException) {
+  println("")
+  println("port was $port")
+  print("checking lsof...")
+  val s = ProcessBuilder(
+	"bash", "lsof -t -i tcp:${port}"
+  ).start().let { it.inputStream.bufferedReader().readText() + it.errorStream.bufferedReader().readText() }
+  println(" $s")
+  e.printStackTrace()
+  exitProcess(1)
 }
 
 
@@ -88,6 +110,7 @@ class InterAppListener(name: String, val actions: Map<String, (String)->Unit>) {
 			clientSocket.close()
 			debugAllSocksPleaseDontClose.remove(clientSocket)
 		  }
+
 		  "ACTIVATE" -> {
 			println("got activate signal")
 			val pid = ProcessHandle.current().pid()
@@ -95,6 +118,7 @@ class InterAppListener(name: String, val actions: Map<String, (String)->Unit>) {
 			clientSocket.close()
 			debugAllSocksPleaseDontClose.remove(clientSocket)
 		  }
+
 		  "HERE!"    -> Unit
 		  else       -> {
 			val key = signal.substringBefore(":")
