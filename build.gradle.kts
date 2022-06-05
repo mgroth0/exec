@@ -1,3 +1,5 @@
+modtype = LIB
+
 dependencies {
   api(projects.kj.kjlib)
   implementation(projects.kj.json)
