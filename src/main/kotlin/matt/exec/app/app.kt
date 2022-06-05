@@ -53,12 +53,14 @@ open class App(
 	return EXIT
   }
 
+
   protected fun main(
 	altAppInterfaceParam: Map<String, App.(String)->Unit>? = null,
 	shutdown: (App.()->Unit)? = null,
 	consumeShutdown: (App.()->Unit)? = null,
 	prefx: (App.()->Unit)? = null,
-	cfg: (()->Unit)? = null
+	cfg: (()->Unit)? = null,
+
   ) {
 	cfg?.go { it.invoke() }
 	/*thread { if (!testProtoTypeSucceeded()) err("bad") }*/
