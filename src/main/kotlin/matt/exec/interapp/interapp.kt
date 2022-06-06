@@ -86,65 +86,74 @@ fun tryCreatingSocket(port: Int) = try {
 }
 
 
-class InterAppListener(name: String, val actions: Map<String, (String)->Unit>) {
-  private val prt = port(name)
-  private val serverSocket = tryCreatingSocket(prt)
+class InterAppListener(prt: Int, val actions: Map<String, (String)->Unit>, val continueOp: InterAppListener.()->Boolean = { true }) {
+  constructor(name: String, actions: Map<String, (String)->Unit>): this(port(name), actions)
+
+  val serverSocket = tryCreatingSocket(prt)
 
   fun coreLoop() {
 	var continueRunning = true
 	val debugAllSocksPleaseDontClose = mutableListOf<Socket>()
-	while (continueRunning) {
-	  val clientSocket = serverSocket.accept()
-	  debugAllSocksPleaseDontClose.add(clientSocket)
-	  val out = clientSocket.getOutputStream()
-	  println("SOCKET_CHANNEL=${clientSocket.channel}")
-	  MY_INTER_APP_SEM.acquire()
-	  val signal = clientSocket.bufferedReader().readWithTimeout(2000).trim()
-	  if (signal.isBlank()) {
-		println("signal is blank...")
-	  }
-	  if (signal.isNotBlank()) {
-		println("signal: $signal")
-		when (signal) {
-		  "EXIT"     -> {
-			println("got quit signal")
-			continueRunning = false
-			clientSocket.close()
-			debugAllSocksPleaseDontClose.remove(clientSocket)
-		  }
+	serverSocket.soTimeout =
+	  100 /*necessary so the serverSocket.accept() doesn't block forever, which causes apps and the idea plugin to hang*/
+	serverSocket.use {
+	  while (continueRunning && continueOp()) {
+		val clientSocket = try {
+		  serverSocket.accept()
+		} catch (e: SocketTimeoutException) {
+		  continue
+		}
+		debugAllSocksPleaseDontClose.add(clientSocket)
+		val out = clientSocket.getOutputStream()
+		println("SOCKET_CHANNEL=${clientSocket.channel}")
+		MY_INTER_APP_SEM.acquire()
+		val signal = clientSocket.bufferedReader().readWithTimeout(2000).trim()
+		if (signal.isBlank()) {
+		  println("signal is blank...")
+		}
+		if (signal.isNotBlank()) {
+		  println("signal: $signal")
+		  when (signal) {
+			"EXIT"     -> {
+			  println("got quit signal")
+			  continueRunning = false
+			  clientSocket.close()
+			  debugAllSocksPleaseDontClose.remove(clientSocket)
+			}
 
-		  "ACTIVATE" -> {
-			println("got activate signal")
-			val pid = ProcessHandle.current().pid()
-			activateByPid(pid)
-			clientSocket.close()
-			debugAllSocksPleaseDontClose.remove(clientSocket)
-		  }
+			"ACTIVATE" -> {
+			  println("got activate signal")
+			  val pid = ProcessHandle.current().pid()
+			  activateByPid(pid)
+			  clientSocket.close()
+			  debugAllSocksPleaseDontClose.remove(clientSocket)
+			}
 
-		  "HERE!"    -> Unit
-		  else       -> {
-			val key = signal.substringBefore(":")
-			val value = signal.substringAfter(":")
-			println("other signal (length=${signal.length}) (key=$key,value=$value)")
-			if (key == "ARE_YOU_RUNNING") {
+			"HERE!"    -> Unit
+			else       -> {
+			  val key = signal.substringBefore(":")
+			  val value = signal.substringAfter(":")
+			  println("other signal (length=${signal.length}) (key=$key,value=$value)")
+			  if (key == "ARE_YOU_RUNNING") {
 
-			  out.write("Here!\r\n".encodeToByteArray())
-			  out.flush()
+				out.write("Here!\r\n".encodeToByteArray())
+				out.flush()
 
-			  println("told them that im here!")
-			} else {
-			  val action = actions.entries.firstOrNull { it.key == key }
-			  if (action == null) {
-				println("found no action with key \"$key\"")
+				println("told them that im here!")
 			  } else {
-				println("found action with key \"$key\". executing.")
-				action.value(value)
+				val action = actions.entries.firstOrNull { it.key == key }
+				if (action == null) {
+				  println("found no action with key \"$key\"")
+				} else {
+				  println("found action with key \"$key\". executing.")
+				  action.value(value)
+				}
 			  }
 			}
 		  }
 		}
+		MY_INTER_APP_SEM.release()
 	  }
-	  MY_INTER_APP_SEM.release()
 	}
 	println("Out of while loop, exiting")
   }
