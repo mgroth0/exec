@@ -57,9 +57,11 @@ fun readSocketLines(
 	server.use {
 	  while (!server.isClosed) {
 		server.acceptOrTimeout()?.go { client ->
+		  println("emiting all")
 		  emitAll(
 			client.bufferedReader().lineFlow(delayMS = delayMS)
 		  )
+		  println("emitted all")
 		} ?: delay(delayMS)
 	  }
 	}
