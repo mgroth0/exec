@@ -13,10 +13,10 @@ import matt.kjlib.socket.InterAppInterface
 import matt.kjlib.socket.MY_INTER_APP_SEM
 import matt.kjlib.socket.SingleSender
 import matt.kjlib.socket.port
+import matt.kjlib.socket.reader.SocketReader
+import matt.kjlib.socket.reader.readTextBeforeTimeout
 import matt.klib.commons.VAL_JSON
 import matt.klib.lang.go
-import matt.stream.kj.SocketReader
-import matt.stream.kj.readTextBeforeTimeout
 import java.net.BindException
 import java.net.ServerSocket
 import java.net.Socket
