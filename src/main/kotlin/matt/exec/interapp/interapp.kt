@@ -1,7 +1,6 @@
 package matt.exec.interapp
 
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import matt.async.waitFor
 import matt.auto.activateByPid
@@ -13,6 +12,7 @@ import matt.kjlib.socket.MY_INTER_APP_SEM
 import matt.kjlib.socket.SingleSender
 import matt.kjlib.socket.port
 import matt.klib.commons.VAL_JSON
+import matt.klib.file.MFile
 import matt.klib.lang.go
 import matt.stream.kj.SocketReader
 import matt.stream.kj.readTextBeforeTimeout
@@ -81,11 +81,35 @@ fun tryCreatingSocket(port: Int) = try {
   exitProcess(1)
 }
 
+open class Logger(private val logfile: MFile? = null) {
+  init {
+	logfile?.parentFile?.mkdirs()
+  }
+
+  var startTime: Long? = null
+  fun printlog(s: String) {
+	val now = System.currentTimeMillis()
+	val dur = startTime?.let { now - it }
+	val line = "[$now][$dur] $s"
+	logfile?.appendText("\n" + line) ?: println(line)
+	if (logfile != null && logfile.readLines().size > 1000) {
+	  logfile.writeText(
+		"overwriting log file since it has > 1000 lines. Did this because I'm experiencing hanging and thought it might be this huge file. Todo: backup before delete"
+	  )
+	}
+  }
+
+  operator fun plusAssign(s: String) = printlog(s)
+}
+
+object DefaultLogger: Logger(logfile = null)
+
 
 class InterAppListener(
   prt: Int,
   val actions: Map<String, (String)->Unit>,
-  val continueOp: InterAppListener.()->Boolean = { true }
+  val continueOp: InterAppListener.()->Boolean = { true },
+  private val log: Logger = DefaultLogger
 ) {
   constructor(name: String, actions: Map<String, (String)->Unit>): this(port(name), actions)
 
@@ -99,6 +123,7 @@ class InterAppListener(
 	serverSocket.soTimeout = 100
 
 	serverSocket.use {
+
 	  while (continueRunning && continueOp()) {
 		val clientSocket = try {
 		  serverSocket.accept()
@@ -107,47 +132,47 @@ class InterAppListener(
 		}
 		debugAllSocksPleaseDontClose.add(clientSocket)
 		val out = clientSocket.getOutputStream()
-		println("SOCKET_CHANNEL=${clientSocket.channel}")
+		log += ("SOCKET_CHANNEL=${clientSocket.channel}")
 		MY_INTER_APP_SEM.acquire()
 		val signal = clientSocket.readTextBeforeTimeout(2000).trim()
 		if (signal.isBlank()) {
-		  println("signal is blank...")
+		  log += ("signal is blank...")
 		}
 		if (signal.isNotBlank()) {
-		  println("signal: $signal")
+		  log += ("signal: $signal")
 		  when (signal) {
-			"EXIT" -> {
-			  println("got quit signal")
+			"EXIT"     -> {
+			  log += ("got quit signal")
 			  continueRunning = false
 			  clientSocket.close()
 			  debugAllSocksPleaseDontClose.remove(clientSocket)
 			}
 
 			"ACTIVATE" -> {
-			  println("got activate signal")
+			  log += ("got activate signal")
 			  val pid = ProcessHandle.current().pid()
 			  activateByPid(pid)
 			  clientSocket.close()
 			  debugAllSocksPleaseDontClose.remove(clientSocket)
 			}
 
-			"HERE!" -> Unit
-			else -> {
+			"HERE!"    -> Unit
+			else       -> {
 			  val key = signal.substringBefore(":")
 			  val value = signal.substringAfter(":")
-			  println("other signal (length=${signal.length}) (key=$key,value=$value)")
+			  log += ("other signal (length=${signal.length}) (key=$key,value=$value)")
 			  if (key == "ARE_YOU_RUNNING") {
 
 				out.write("Here!\r\n".encodeToByteArray())
 				out.flush()
 
-				println("told them that im here!")
+				log += ("told them that im here!")
 			  } else {
 				val action = actions.entries.firstOrNull { it.key == key }
 				if (action == null) {
-				  println("found no action with key \"$key\"")
+				  log += ("found no action with key \"$key\"")
 				} else {
-				  println("found action with key \"$key\". executing.")
+				  log += ("found action with key \"$key\". executing.")
 				  action.value(value)
 				}
 			  }
@@ -156,8 +181,9 @@ class InterAppListener(
 		}
 		MY_INTER_APP_SEM.release()
 	  }
+	  log += ("out of while loop, closing server socket")
 	}
-	println("Out of while loop, exiting")
+	log += ("Out of while loop, exiting")
   }
 }
 
