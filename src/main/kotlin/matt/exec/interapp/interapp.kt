@@ -1,33 +1,26 @@
 package matt.exec.interapp
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import matt.async.emitAll
-import matt.async.lineFlow
 import matt.async.waitFor
 import matt.auto.activateByPid
 import matt.exec.app.appName
 import matt.json.lang.get
 import matt.json.parseJson
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.BindException
-import java.net.ServerSocket
-import java.net.Socket
-import kotlin.system.exitProcess
-import matt.klib.commons.VAL_JSON
 import matt.kjlib.socket.InterAppInterface
 import matt.kjlib.socket.MY_INTER_APP_SEM
 import matt.kjlib.socket.SingleSender
 import matt.kjlib.socket.port
-import matt.kjlib.socket.readWithTimeout
+import matt.klib.commons.VAL_JSON
 import matt.klib.lang.go
+import matt.stream.kj.SocketReader
+import matt.stream.kj.readTextBeforeTimeout
+import java.net.BindException
+import java.net.ServerSocket
+import java.net.Socket
 import java.net.SocketTimeoutException
+import kotlin.system.exitProcess
 
 
 const val SLEEP_PERIOD = 100.toLong() //ms
@@ -36,9 +29,6 @@ const val PRINT_PERIOD = 10_000 //ms
 @Suppress("unused")
 val I_PERIOD = (PRINT_PERIOD/SLEEP_PERIOD).toInt()
 
-fun Socket.bufferedReader() = BufferedReader(
-  InputStreamReader(getInputStream())
-)
 
 fun ServerSocket.acceptOrTimeout(): Socket? {
   return try {
@@ -57,11 +47,17 @@ fun readSocketLines(
 	server.use {
 	  while (!server.isClosed) {
 		server.acceptOrTimeout()?.go { client ->
-		  println("emiting all")
-		  emitAll(
-			client.bufferedReader().lineFlow(delayMS = delayMS)
-		  )
-		  println("emitted all")
+		  //		  println("emiting all")
+		  val sReader = SocketReader(client)
+		  do {
+			val line = sReader.readLineOrSuspend(delayMS)
+			emit(line)
+		  } while (line != null)
+
+		  //		  emitAll(
+		  //			client.bufferedReader().lineFlow(delayMS = delayMS)
+		  //		  )
+		  //		  println("emitted all")
 		} ?: delay(delayMS)
 	  }
 	}
@@ -86,7 +82,11 @@ fun tryCreatingSocket(port: Int) = try {
 }
 
 
-class InterAppListener(prt: Int, val actions: Map<String, (String)->Unit>, val continueOp: InterAppListener.()->Boolean = { true }) {
+class InterAppListener(
+  prt: Int,
+  val actions: Map<String, (String)->Unit>,
+  val continueOp: InterAppListener.()->Boolean = { true }
+) {
   constructor(name: String, actions: Map<String, (String)->Unit>): this(port(name), actions)
 
   val serverSocket = tryCreatingSocket(prt)
@@ -94,8 +94,10 @@ class InterAppListener(prt: Int, val actions: Map<String, (String)->Unit>, val c
   fun coreLoop() {
 	var continueRunning = true
 	val debugAllSocksPleaseDontClose = mutableListOf<Socket>()
-	serverSocket.soTimeout =
-	  100 /*necessary so the serverSocket.accept() doesn't block forever, which causes apps and the idea plugin to hang*/
+
+	/*necessary so the serverSocket.accept() doesn't block forever, which causes apps and the idea plugin to hang*/
+	serverSocket.soTimeout = 100
+
 	serverSocket.use {
 	  while (continueRunning && continueOp()) {
 		val clientSocket = try {
@@ -107,14 +109,14 @@ class InterAppListener(prt: Int, val actions: Map<String, (String)->Unit>, val c
 		val out = clientSocket.getOutputStream()
 		println("SOCKET_CHANNEL=${clientSocket.channel}")
 		MY_INTER_APP_SEM.acquire()
-		val signal = clientSocket.bufferedReader().readWithTimeout(2000).trim()
+		val signal = clientSocket.readTextBeforeTimeout(2000).trim()
 		if (signal.isBlank()) {
 		  println("signal is blank...")
 		}
 		if (signal.isNotBlank()) {
 		  println("signal: $signal")
 		  when (signal) {
-			"EXIT"     -> {
+			"EXIT" -> {
 			  println("got quit signal")
 			  continueRunning = false
 			  clientSocket.close()
@@ -129,8 +131,8 @@ class InterAppListener(prt: Int, val actions: Map<String, (String)->Unit>, val c
 			  debugAllSocksPleaseDontClose.remove(clientSocket)
 			}
 
-			"HERE!"    -> Unit
-			else       -> {
+			"HERE!" -> Unit
+			else -> {
 			  val key = signal.substringBefore(":")
 			  val value = signal.substringAfter(":")
 			  println("other signal (length=${signal.length}) (key=$key,value=$value)")
