@@ -1,5 +1,7 @@
 package matt.exec.interapp
 
+import matt.klib.log.DefaultLogger
+import matt.klib.log.Logger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import matt.async.waitFor
@@ -12,7 +14,6 @@ import matt.kjlib.socket.MY_INTER_APP_SEM
 import matt.kjlib.socket.SingleSender
 import matt.kjlib.socket.port
 import matt.klib.commons.VAL_JSON
-import matt.klib.file.MFile
 import matt.klib.lang.go
 import matt.stream.kj.SocketReader
 import matt.stream.kj.readTextBeforeTimeout
@@ -81,28 +82,7 @@ fun tryCreatingSocket(port: Int) = try {
   exitProcess(1)
 }
 
-open class Logger(private val logfile: MFile? = null) {
-  init {
-	logfile?.parentFile?.mkdirs()
-  }
 
-  var startTime: Long? = null
-  fun printlog(s: String) {
-	val now = System.currentTimeMillis()
-	val dur = startTime?.let { now - it }
-	val line = "[$now][$dur] $s"
-	logfile?.appendText("\n" + line) ?: println(line)
-	if (logfile != null && logfile.readLines().size > 1000) {
-	  logfile.writeText(
-		"overwriting log file since it has > 1000 lines. Did this because I'm experiencing hanging and thought it might be this huge file. Todo: backup before delete"
-	  )
-	}
-  }
-
-  operator fun plusAssign(s: String) = printlog(s)
-}
-
-object DefaultLogger: Logger(logfile = null)
 
 
 class InterAppListener(
@@ -116,6 +96,7 @@ class InterAppListener(
   val serverSocket = tryCreatingSocket(prt)
 
   fun coreLoop() {
+	log += "starting coreLoop"
 	var continueRunning = true
 	val debugAllSocksPleaseDontClose = mutableListOf<Socket>()
 
@@ -123,7 +104,7 @@ class InterAppListener(
 	serverSocket.soTimeout = 100
 
 	serverSocket.use {
-
+	  log += "using serverSocket"
 	  while (continueRunning && continueOp()) {
 		val clientSocket = try {
 		  serverSocket.accept()
@@ -134,6 +115,7 @@ class InterAppListener(
 		val out = clientSocket.getOutputStream()
 		log += ("SOCKET_CHANNEL=${clientSocket.channel}")
 		MY_INTER_APP_SEM.acquire()
+		log += "got sem"
 		val signal = clientSocket.readTextBeforeTimeout(2000).trim()
 		if (signal.isBlank()) {
 		  log += ("signal is blank...")
