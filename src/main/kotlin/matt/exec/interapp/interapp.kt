@@ -83,12 +83,11 @@ fun tryCreatingSocket(port: Int) = try {
 }
 
 
-
-
 class InterAppListener(
   prt: Int,
   val actions: Map<String, (String)->Unit>,
   val continueOp: InterAppListener.()->Boolean = { true },
+  val suspendingRead: Boolean = true,
   private val log: Logger = DefaultLogger
 ) {
   constructor(name: String, actions: Map<String, (String)->Unit>): this(port(name), actions)
@@ -116,7 +115,7 @@ class InterAppListener(
 		log += ("SOCKET_CHANNEL=${clientSocket.channel}")
 		MY_INTER_APP_SEM.acquire()
 		log += "got sem"
-		val signal = clientSocket.readTextBeforeTimeout(2000).trim()
+		val signal = clientSocket.readTextBeforeTimeout(2000, suspend = suspendingRead).trim()
 		if (signal.isBlank()) {
 		  log += ("signal is blank...")
 		}
