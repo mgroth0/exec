@@ -48,13 +48,22 @@ fun readSocketLines(
 	server.use {
 	  while (!server.isClosed) {
 		server.acceptOrTimeout()?.go { client ->
-		  //		  println("emiting all")
+		  println("getting sReader")
 		  val sReader = SocketReader(client)
+		  println("reading lines")
 		  do {
+			println("reading line")
 			val line = sReader.readLineOrSuspend(delayMS)
-			emit(line)
+//			println("got line: $line")
+			if (line != null) {
+			  emit(line)
+			  println("emitted line")
+			}
+
 		  } while (line != null)
 
+		  println("out of readSocketLines loop")
+		  server.close()
 		  //		  emitAll(
 		  //			client.bufferedReader().lineFlow(delayMS = delayMS)
 		  //		  )
