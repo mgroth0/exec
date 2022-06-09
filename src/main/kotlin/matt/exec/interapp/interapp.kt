@@ -92,6 +92,14 @@ class InterAppListener(
 ) {
   constructor(name: String, actions: Map<String, (String)->Unit>): this(port(name), actions)
 
+
+  private val _elementList = mutableListOf<String>()
+
+  val elementList: List<String>
+	get() = _elementList
+
+  val elementList2: List<String> = mutableListOf()
+
   val serverSocket = tryCreatingSocket(prt)
 
   fun coreLoop() {
