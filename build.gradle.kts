@@ -6,4 +6,5 @@ dependencies {
   api(projects.kj.auto)
   api(projects.kj.kjlib.socket)
   implementation(libs.kotlinx.coroutines)
+  implementation(projects.kj.reflect)
 }
