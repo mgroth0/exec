@@ -7,8 +7,6 @@ import matt.kjlib.byte.MemReport
 import matt.klib.commons.LOG_FOLDER
 import matt.klib.commons.get
 import matt.klib.file.MFile
-import matt.klib.file.ext.getNextAndClearWhenMoreThan
-import matt.klib.file.ext.text
 import java.lang.Thread.UncaughtExceptionHandler
 import kotlin.random.Random.Default.nextDouble
 import kotlin.system.exitProcess
