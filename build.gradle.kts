@@ -7,9 +7,7 @@ apis(
 )
 
 implementations(
-  projects.kj.json,
   libs.kotlinx.coroutines,
   projects.kj.reflect,
-  projects.kj.async,
   projects.k.key
 )
