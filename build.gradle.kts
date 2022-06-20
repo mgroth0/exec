@@ -9,5 +9,5 @@ apis(
 implementations(
   libs.kotlinx.coroutines,
   projects.kj.reflect,
-  projects.k.key
+//  projects.k.key
 )
