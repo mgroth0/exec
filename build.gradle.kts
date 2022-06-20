@@ -1,13 +1,13 @@
 modtype = LIB
 
 apis(
-  projects.kj.kjlib,
+  projects.k.kjlib,
   projects.k.auto,
-  projects.kj.kjlib.kjlibSocket
+  projects.k.kjlib.kjlibSocket
 )
 
 implementations(
   libs.kotlinx.coroutines,
-  projects.kj.reflect,
+  projects.k.reflect,
 //  projects.k.key
 )
