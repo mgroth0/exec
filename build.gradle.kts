@@ -1,11 +1,15 @@
 modtype = LIB
 
-dependencies {
-  api(projects.kj.kjlib)
-  implementation(projects.kj.json)
-  api(projects.kj.auto)
-  api(projects.kj.kjlib.kjlibSocket)
-  implementation(libs.kotlinx.coroutines)
-  implementation(projects.kj.reflect)
-  implementation(projects.kj.async)
-}
+apis(
+  projects.kj.kjlib,
+  projects.kj.auto,
+  projects.kj.kjlib.kjlibSocket
+)
+
+implementations(
+  projects.kj.json,
+  libs.kotlinx.coroutines,
+  projects.kj.reflect,
+  projects.kj.async,
+  projects.k.key
+)
