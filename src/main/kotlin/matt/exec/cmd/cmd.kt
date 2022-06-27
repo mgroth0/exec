@@ -57,8 +57,7 @@ class InputPoint(
 	  acceptAnyFun!!(command)
 	} else {
 	  actions[command]?.invoke() ?: run {
-		println("valid commands:")
-		taball(actions.keys + exitCommands)
+		taball("valid commands:",actions.keys + exitCommands)
 	  }
 	}
 	return true
