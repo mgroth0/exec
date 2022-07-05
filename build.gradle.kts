@@ -3,7 +3,7 @@ modtype = LIB
 apis(
   projects.k.kjlib,
   projects.k.auto,
-  projects.k.kjlib.kjlibSocket
+  projects.k.kjlib.socket
 )
 
 implementations(
