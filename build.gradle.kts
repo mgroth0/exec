@@ -1,5 +1,3 @@
-modtype = LIB
-
 apis(
   projects.k.kjlib,
   projects.k.auto,
