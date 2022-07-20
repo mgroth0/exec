@@ -5,7 +5,7 @@ import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
 import matt.auto.interapp.InterAppListener
 import matt.kjlib.lang.jlang.resourceTxt
-import matt.kjlib.shutdown.beforeShutdown
+import matt.klib.shutdown.beforeShutdown
 import matt.kjlib.socket.port
 import matt.file.commons.DATA_FOLDER
 import matt.file.MFile
