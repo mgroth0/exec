@@ -4,12 +4,12 @@ import matt.auto.exception.MyDefaultUncaughtExceptionHandler
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
 import matt.auto.interapp.InterAppListener
-import matt.kjlib.lang.jlang.resourceTxt
 import matt.klib.shutdown.beforeShutdown
 import matt.kjlib.socket.port
 import matt.file.commons.DATA_FOLDER
 import matt.file.MFile
 import matt.klib.lang.go
+import matt.klib.lang.resourceTxt
 import matt.reflect.NoArgConstructor
 import matt.reflect.annotatedKTypes
 import matt.reflect.subclasses

@@ -1,4 +1,5 @@
 /build/
+.git_knn
 /out/
 *.hprof
 *.zip
