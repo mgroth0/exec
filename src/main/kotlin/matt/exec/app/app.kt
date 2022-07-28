@@ -1,5 +1,6 @@
 package matt.exec.app
 
+import kotlinx.serialization.Serializable
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
@@ -8,8 +9,10 @@ import matt.klib.shutdown.beforeShutdown
 import matt.kjlib.socket.port
 import matt.file.commons.DATA_FOLDER
 import matt.file.MFile
+import matt.file.commons.VERSION_TXT_FILE_NAME
 import matt.klib.lang.go
 import matt.klib.lang.resourceTxt
+import matt.klib.release.Version
 import matt.reflect.NoArgConstructor
 import matt.reflect.annotatedKTypes
 import matt.reflect.subclasses
@@ -21,6 +24,9 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
 val appName by lazy { resourceTxt("matt/appname.txt")!! }
+val myVersion: Version by lazy { Version(resourceTxt(VERSION_TXT_FILE_NAME)!!) }
+
+
 val myDataFolder = DATA_FOLDER[appName]
 
 open class App(
@@ -57,7 +63,7 @@ open class App(
 	prefx: (App.()->Unit)? = null,
 	cfg: (()->Unit)? = null,
 
-  ) {
+	) {
 	cfg?.go { it.invoke() }
 	/*thread { if (!testProtoTypeSucceeded()) err("bad") }*/
 	InitValidator::class.subclasses().forEach { validator ->
