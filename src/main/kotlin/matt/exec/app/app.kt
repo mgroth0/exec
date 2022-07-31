@@ -1,22 +1,21 @@
 package matt.exec.app
 
-import kotlinx.serialization.Serializable
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
 import matt.auto.interapp.InterAppListener
-import matt.klib.shutdown.beforeShutdown
-import matt.kjlib.socket.port
-import matt.file.commons.DATA_FOLDER
 import matt.file.MFile
+import matt.file.commons.DATA_FOLDER
 import matt.file.commons.VERSION_TXT_FILE_NAME
+import matt.kjlib.shell.Port
+import matt.kjlib.socket.port
 import matt.klib.lang.go
 import matt.klib.lang.resourceTxt
 import matt.klib.release.Version
+import matt.klib.shutdown.beforeShutdown
 import matt.reflect.NoArgConstructor
 import matt.reflect.annotatedKTypes
 import matt.reflect.subclasses
-
 import kotlin.concurrent.thread
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
@@ -111,10 +110,15 @@ open class App(
 	if (flow_app!!.altAppInterface != null) {
 	  val nam = flow_app!!.altAppInterface!!.first
 	  thread(isDaemon = true) {
-		ProcessBuilder(
+
+
+		Port(port(nam)).processes().forEach { it.kill() }
+
+
+		/*ProcessBuilder(
 		  "/bin/sh", "-c",
 		  "lsof -t -i tcp:${port(nam)} | xargs kill"
-		).start().waitFor()
+		).start().waitFor()*/
 		InterAppListener(
 		  name = nam,
 		  actions = flow_app!!.altAppInterface!!.second.map {
