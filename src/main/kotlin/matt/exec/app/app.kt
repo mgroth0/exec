@@ -51,6 +51,7 @@ open class App(
 	st: String,
 	exceptionFile: MFile
   ): ExceptionResponse {
+	println("in extraShutdownHook")
 	return EXIT
   }
 
@@ -78,10 +79,18 @@ open class App(
 	  }
 	}
 
-	shutdown?.go { beforeShutdown { it.invoke(this) } }
+	shutdown?.go { beforeShutdown {
+	  println("invoking shutdown")
+	  it.invoke(this)
+	  println("invoked shutdown")
+	} }
 	require(listOfNotNull(shutdown, consumeShutdown).count() <= 1)
 	/*this is dirty because it doesnt consume the shutdown unless its a gui window close event*/
-	consumeShutdown?.go { beforeShutdown { it.invoke(this) } }
+	consumeShutdown?.go { beforeShutdown {
+	  println("invoking consumeShutdown")
+	  it.invoke(this)
+	  println("invoked consumeShutdown")
+	} }
 
 	Thread.setDefaultUncaughtExceptionHandler(
 	  MyDefaultUncaughtExceptionHandler(
