@@ -4,6 +4,7 @@ import matt.auto.exception.MyDefaultUncaughtExceptionHandler
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
 import matt.auto.interapp.InterAppListener
+import matt.auto.interapp.InterAppMessage
 import matt.file.MFile
 import matt.file.commons.DATA_FOLDER
 import matt.file.commons.VERSION_TXT_FILE_NAME
@@ -36,7 +37,7 @@ open class App(
 	protected var flow_app: App? = null
   }
 
-  var altAppInterface: Pair<String, Map<String, App.(String)->Unit>>? = null
+  var altAppInterface: Pair<String, Map<String, App.(String)->InterAppMessage>>? = null
 
   init {
 	flow_app = this
@@ -57,7 +58,7 @@ open class App(
 
 
   protected fun main(
-	altAppInterfaceParam: Map<String, App.(String)->Unit>? = null,
+	altAppInterfaceParam: Map<String, App.(String)->InterAppMessage>? = null,
 	shutdown: (App.()->Unit)? = null,
 	consumeShutdown: (App.()->Unit)? = null,
 	prefx: (App.()->Unit)? = null,
