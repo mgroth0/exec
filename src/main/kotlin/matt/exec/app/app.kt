@@ -4,12 +4,11 @@ import matt.auto.exception.MyDefaultUncaughtExceptionHandler
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
 import matt.auto.interapp.InterAppListener
-import matt.auto.interapp.InterAppResult
+import matt.auto.interapp.result.InterAppResult
 import matt.file.MFile
 import matt.file.commons.DATA_FOLDER
 import matt.file.commons.VERSION_TXT_FILE_NAME
-import matt.kjlib.shell.Port
-import matt.kjlib.socket.port
+import matt.kjlib.socket.port.Port
 import matt.klib.lang.go
 import matt.klib.lang.resourceTxt
 import matt.klib.release.Version
@@ -80,18 +79,22 @@ open class App(
 	  }
 	}
 
-	shutdown?.go { beforeShutdown {
-	  println("invoking shutdown")
-	  it.invoke(this)
-	  println("invoked shutdown")
-	} }
+	shutdown?.go {
+	  beforeShutdown {
+		println("invoking shutdown")
+		it.invoke(this)
+		println("invoked shutdown")
+	  }
+	}
 	require(listOfNotNull(shutdown, consumeShutdown).count() <= 1)
 	/*this is dirty because it doesnt consume the shutdown unless its a gui window close event*/
-	consumeShutdown?.go { beforeShutdown {
-	  println("invoking consumeShutdown")
-	  it.invoke(this)
-	  println("invoked consumeShutdown")
-	} }
+	consumeShutdown?.go {
+	  beforeShutdown {
+		println("invoking consumeShutdown")
+		it.invoke(this)
+		println("invoked consumeShutdown")
+	  }
+	}
 
 	Thread.setDefaultUncaughtExceptionHandler(
 	  MyDefaultUncaughtExceptionHandler(
@@ -122,7 +125,7 @@ open class App(
 	  thread(isDaemon = true) {
 
 
-		Port(port(nam)).processes().forEach { it.kill() }
+		Port(nam).processes().forEach { it.kill() }
 
 
 		/*ProcessBuilder(
