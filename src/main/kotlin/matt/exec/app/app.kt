@@ -3,7 +3,7 @@ package matt.exec.app
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
-import matt.auto.interapp.InterAppServer
+import matt.auto.interapp.ActionServer
 import matt.auto.interapp.result.InterAppResult
 import matt.file.MFile
 import matt.file.commons.DATA_FOLDER
@@ -132,7 +132,7 @@ open class App(
 		  "/bin/sh", "-c",
 		  "lsof -t -i tcp:${port(nam)} | xargs kill"
 		).start().waitFor()*/
-		InterAppServer(
+		ActionServer(
 		  name = nam,
 		  actions = flow_app!!.altAppInterface!!.second.map {
 			val key = it.key
