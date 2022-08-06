@@ -4,7 +4,7 @@ import matt.auto.exception.MyDefaultUncaughtExceptionHandler
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
 import matt.auto.interapp.ActionServer
-import matt.auto.interapp.result.InterAppResult
+import matt.kjlib.socket.message.InterAppResult
 import matt.file.MFile
 import matt.file.commons.DATA_FOLDER
 import matt.file.commons.VERSION_TXT_FILE_NAME
