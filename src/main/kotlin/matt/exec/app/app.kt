@@ -8,6 +8,7 @@ import matt.file.MFile
 import matt.file.commons.DATA_FOLDER
 import matt.file.commons.VERSION_TXT_FILE_NAME
 import matt.kjlib.socket.message.ActionResult
+import matt.kjlib.socket.message.InterAppMessage
 import matt.kjlib.socket.port.Port
 import matt.klib.lang.go
 import matt.klib.lang.resourceTxt
@@ -36,8 +37,6 @@ open class App(
 	protected var flow_app: App? = null
   }
 
-  var altAppInterface: Pair<String, Map<String, App.(String)->ActionResult>>? = null
-
   init {
 	flow_app = this
   }
@@ -57,7 +56,7 @@ open class App(
 
 
   protected fun main(
-	altAppInterfaceParam: Map<String, App.(String)->ActionResult>? = null,
+	altAppInterfaceParam: (InterAppMessage)->ActionResult? = { null },
 	shutdown: (App.()->Unit)? = null,
 	consumeShutdown: (App.()->Unit)? = null,
 	prefx: (App.()->Unit)? = null,
@@ -117,32 +116,20 @@ open class App(
 	)
 
 
-	if (altAppInterfaceParam != null) {
-	  this.altAppInterface = appName to altAppInterfaceParam
-	}
-	if (flow_app!!.altAppInterface != null) {
-	  val nam = flow_app!!.altAppInterface!!.first
-	  thread(isDaemon = true) {
+	thread(isDaemon = true) {
+	  val port = Port(appName)
+
+	  port.processes().forEach { it.kill() }
 
 
-		Port(nam).processes().forEach { it.kill() }
-
-
-		/*ProcessBuilder(
-		  "/bin/sh", "-c",
-		  "lsof -t -i tcp:${port(nam)} | xargs kill"
-		).start().waitFor()*/
-		ActionServer(
-		  name = nam,
-		  actions = flow_app!!.altAppInterface!!.second.map {
-			val key = it.key
-			val handler = it.value
-			key to { arg: String ->
-			  flow_app!!.run { handler(arg) }
-			}
-		  }.toMap()
-		).coreLoop()
-	  }
+	  /*ProcessBuilder(
+		"/bin/sh", "-c",
+		"lsof -t -i tcp:${port(nam)} | xargs kill"
+	  ).start().waitFor()*/
+	  ActionServer(
+		prt = port,
+		messageHandler = altAppInterfaceParam
+	  ).coreLoop()
 	}
 	prefx?.invoke(this)
   }
