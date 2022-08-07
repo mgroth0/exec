@@ -7,8 +7,8 @@ import matt.auto.interapp.ActionServer
 import matt.file.MFile
 import matt.file.commons.DATA_FOLDER
 import matt.file.commons.VERSION_TXT_FILE_NAME
-import matt.kjlib.socket.message.ActionResult
-import matt.kjlib.socket.message.InterAppMessage
+import matt.stream.message.ActionResult
+import matt.stream.message.InterAppMessage
 import matt.kjlib.socket.port.Port
 import matt.klib.lang.go
 import matt.klib.lang.resourceTxt
