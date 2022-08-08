@@ -7,7 +7,6 @@ import matt.auto.interapp.ActionServer
 import matt.file.MFile
 import matt.file.commons.DATA_FOLDER
 import matt.file.commons.VERSION_TXT_FILE_NAME
-import matt.kjlib.socket.port.Port
 import matt.klib.lang.go
 import matt.klib.lang.resourceTxt
 import matt.klib.release.Version
@@ -15,8 +14,6 @@ import matt.klib.shutdown.duringShutdown
 import matt.reflect.NoArgConstructor
 import matt.reflect.annotatedKTypes
 import matt.reflect.subclasses
-import matt.stream.message.ActionResult
-import matt.stream.message.InterAppMessage
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
@@ -112,10 +109,3 @@ interface InitValidator {
 }
 
 annotation class ValidatedOnInit(val by: KClass<out InitValidator>)
-
-class AppServer(
-  messageHandler: ((InterAppMessage)->ActionResult?)? = null
-): ActionServer(
-  Port(appName),
-  messageHandler = messageHandler
-)
