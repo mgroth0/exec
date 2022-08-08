@@ -2,9 +2,9 @@ package matt.exec.cmd
 
 import matt.exec.app.App
 import matt.exec.cmd.CommandLineApp.Companion.exitCommands
-import matt.klib.str.taball
 import matt.klib.lang.go
 import matt.klib.lang.whileTrue
+import matt.klib.str.taball
 
 class CommandLineApp(
   val welcomeMessage: String? = null,
@@ -16,11 +16,10 @@ class CommandLineApp(
 
   fun start(
 	shutdown: (App.()->Unit)? = null,
-	consumeShutdown: (App.()->Unit)? = null,
   ) {
 	welcomeMessage?.go { println(it) }
 	main(
-	  shutdown = shutdown, consumeShutdown = consumeShutdown, cfg = cfg
+	  shutdown = shutdown, cfg = cfg
 	)
 	cmdDSL.invoke(this)
 	whileTrue { rootInputPoint.run() }
@@ -57,7 +56,7 @@ class InputPoint(
 	  acceptAnyFun!!(command)
 	} else {
 	  actions[command]?.invoke() ?: run {
-		taball("valid commands:",actions.keys + exitCommands)
+		taball("valid commands:", actions.keys + exitCommands)
 	  }
 	}
 	return true
