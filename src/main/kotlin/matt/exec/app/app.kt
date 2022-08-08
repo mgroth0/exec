@@ -17,7 +17,6 @@ import matt.reflect.annotatedKTypes
 import matt.reflect.subclasses
 import matt.stream.message.ActionResult
 import matt.stream.message.InterAppMessage
-import kotlin.concurrent.thread
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
@@ -34,11 +33,11 @@ open class App(
 ) {
 
   companion object {
-	protected var flow_app: App? = null
+	protected var flowApp: App? = null
   }
 
   init {
-	flow_app = this
+	flowApp = this
   }
 
 
@@ -55,7 +54,8 @@ open class App(
 
 
   protected fun main(
-	altAppInterfaceParam: (InterAppMessage)->ActionResult? = { null },
+	//	altAppInterfaceParam: ((InterAppMessage)->ActionResult?)? = null,
+	socketServer: ActionServer? = null,
 	shutdown: (App.()->Unit)? = null,
 	prefx: (App.()->Unit)? = null,
 	cfg: (()->Unit)? = null,
@@ -83,8 +83,6 @@ open class App(
 		println("invoked shutdown")
 	  }
 	}
-
-
 	Thread.setDefaultUncaughtExceptionHandler(
 	  MyDefaultUncaughtExceptionHandler(
 		extraShutdownHook = { t, e, sd, st, ef ->
@@ -103,23 +101,7 @@ open class App(
 		},
 	  )
 	)
-
-
-	thread(isDaemon = true) {
-	  val port = Port(appName)
-
-	  port.processes().forEach { it.kill() }
-
-
-	  /*ProcessBuilder(
-		"/bin/sh", "-c",
-		"lsof -t -i tcp:${port(nam)} | xargs kill"
-	  ).start().waitFor()*/
-	  ActionServer(
-		prt = port,
-		messageHandler = altAppInterfaceParam
-	  ).coreLoop()
-	}
+	socketServer?.coreLoop(threaded = true)
 	prefx?.invoke(this)
   }
 }
@@ -130,3 +112,10 @@ interface InitValidator {
 }
 
 annotation class ValidatedOnInit(val by: KClass<out InitValidator>)
+
+class AppServer(
+  messageHandler: ((InterAppMessage)->ActionResult?)? = null
+): ActionServer(
+  Port(appName),
+  messageHandler = messageHandler
+)
