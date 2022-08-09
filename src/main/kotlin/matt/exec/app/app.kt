@@ -50,7 +50,7 @@ open class App<A: App<A>>(
 
   protected fun main(
 	shutdown: (App<*>.()->Unit)? = null,
-	prefx: (App<*>.()->Unit)? = null,
+	preFX: (App<*>.()->Unit)? = null,
 	cfg: (()->Unit)? = null,
 
 	) {
@@ -88,7 +88,7 @@ open class App<A: App<A>>(
 		},
 	  )
 	)
-	prefx?.invoke(this)
+	preFX?.invoke(this)
   }
 
   fun socketServer(messageHandler: (A.(InterAppMessage)->ActionResult?)?) {
