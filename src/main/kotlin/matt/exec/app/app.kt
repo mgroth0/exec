@@ -6,11 +6,14 @@ import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.E
 import matt.exec.app.appserver.AppServer
 import matt.file.MFile
 import matt.file.commons.DATA_FOLDER
+import matt.file.commons.FILE_ACCESS_CHECK_FILE
 import matt.file.commons.VERSION_TXT_FILE_NAME
+import matt.klib.commons.thisMachine
 import matt.klib.lang.go
 import matt.klib.lang.resourceTxt
 import matt.klib.release.Version
 import matt.klib.shutdown.duringShutdown
+import matt.klib.sys.NEW_MAC
 import matt.reflect.NoArgConstructor
 import matt.reflect.annotatedKTypes
 import matt.reflect.subclasses
@@ -37,6 +40,11 @@ open class App<A: App<A>>(
 
   init {
 	flowApp = this
+	if (thisMachine is NEW_MAC) {
+	  require(FILE_ACCESS_CHECK_FILE.exists()) {
+		"file access issue"
+	  }
+	}
   }
 
 
