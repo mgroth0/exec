@@ -12,10 +12,10 @@ class CommandLineApp(
   args: Array<String> = arrayOf(),
   private val cfg: (()->Unit)? = null,
   private val cmdDSL: CommandLineApp.()->Unit
-): App(args) {
+): App<CommandLineApp>(args) {
 
   fun start(
-	shutdown: (App.()->Unit)? = null,
+	shutdown: (App<*>.()->Unit)? = null,
   ) {
 	welcomeMessage?.go { println(it) }
 	main(
