@@ -92,8 +92,12 @@ open class App<A: App<A>>(
   }
 
   fun socketServer(messageHandler: (A.(InterAppMessage)->ActionResult?)?) {
+	println("making socketServer")
 	@Suppress("UNCHECKED_CAST")
-	AppServer(this as A, messageHandler).coreLoop(threaded = true)
+	val server = AppServer(this as A, messageHandler)
+	println("got server")
+	server.coreLoop(threaded = true)
+	println("ran core loop")
   }
 
 }
