@@ -6,13 +6,11 @@ import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.E
 import matt.exec.app.appserver.AppServer
 import matt.file.MFile
 import matt.file.commons.DATA_FOLDER
-import matt.file.commons.FILE_ACCESS_CHECK_FILE
 import matt.file.commons.VERSION_TXT_FILE_NAME
 import matt.file.commons.hasFullFileAccess
 import matt.lang.go
 import matt.lang.resourceTxt
 import matt.model.release.Version
-import matt.klib.shutdown.duringShutdown
 import matt.reflect.NoArgConstructor
 import matt.reflect.annotatedKTypes
 import matt.reflect.subclasses
