@@ -2,8 +2,8 @@ package matt.exec.cmd
 
 import matt.exec.app.App
 import matt.exec.cmd.CommandLineApp.Companion.exitCommands
-import matt.klib.lang.go
-import matt.klib.lang.whileTrue
+import matt.lang.go
+import matt.lang.whileTrue
 import matt.klib.str.taball
 
 class CommandLineApp(

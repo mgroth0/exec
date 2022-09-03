@@ -9,8 +9,8 @@ import matt.file.commons.DATA_FOLDER
 import matt.file.commons.FILE_ACCESS_CHECK_FILE
 import matt.file.commons.VERSION_TXT_FILE_NAME
 import matt.file.commons.hasFullFileAccess
-import matt.klib.lang.go
-import matt.klib.lang.resourceTxt
+import matt.lang.go
+import matt.lang.resourceTxt
 import matt.klib.release.Version
 import matt.klib.shutdown.duringShutdown
 import matt.reflect.NoArgConstructor
