@@ -12,7 +12,7 @@ import matt.lang.go
 import matt.lang.resourceTxt
 import matt.lang.shutdown.duringShutdown
 import matt.model.release.Version
-import matt.model.md.extractMdValue
+import matt.model.tech.md.extractMdValue
 import matt.reflect.NoArgConstructor
 import matt.reflect.annotatedKTypes
 import matt.reflect.subclasses
