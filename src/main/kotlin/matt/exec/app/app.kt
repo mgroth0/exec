@@ -1,5 +1,6 @@
 package matt.exec.app
 
+import matt.async.thread.daemon
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse
 import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
@@ -11,6 +12,7 @@ import matt.file.commons.hasFullFileAccess
 import matt.lang.go
 import matt.lang.resourceTxt
 import matt.lang.shutdown.duringShutdown
+import matt.log.profile.Stopwatch
 import matt.model.release.Version
 import matt.model.tech.md.extractMdValue
 import matt.reflect.NoArgConstructor
@@ -60,20 +62,25 @@ open class App<A: App<A>>(
 	shutdown: (App<*>.()->Unit)? = null,
 	preFX: (App<*>.()->Unit)? = null,
 	cfg: (()->Unit)? = null,
-
+	t: Stopwatch? = null
 	) {
+	t?.toc("starting main")
 	cfg?.go { it.invoke() }    /*thread { if (!testProtoTypeSucceeded()) err("bad") }*/
-	InitValidator::class.subclasses().forEach { validator ->
-	  require(validator.hasAnnotation<NoArgConstructor>()) { "Validators should have @NoArgConstructor" }
-	  require(validator.createInstance().validate()) {
-		"$validator did not pass"
-	  }
-	  val refAnnos = ValidatedOnInit::class.annotatedKTypes().map { it.findAnnotation<ValidatedOnInit>() }
-		.filter { it!!.by == validator }
-	  require(refAnnos.size == 1) {
-		"please mark with a @ValidatedOnInit who is validated by the validator $validator"
+	t?.toc("did cfg")
+	daemon{
+	  InitValidator::class.subclasses().forEach { validator ->
+		require(validator.hasAnnotation<NoArgConstructor>()) { "Validators should have @NoArgConstructor" }
+		require(validator.createInstance().validate()) {
+		  "$validator did not pass"
+		}
+		val refAnnos = ValidatedOnInit::class.annotatedKTypes().map { it.findAnnotation<ValidatedOnInit>() }
+		  .filter { it!!.by == validator }
+		require(refAnnos.size == 1) {
+		  "please mark with a @ValidatedOnInit who is validated by the validator $validator"
+		}
 	  }
 	}
+	t?.toc("started InitValidator")
 
 	shutdown?.go {
 	  duringShutdown {
@@ -82,11 +89,12 @@ open class App<A: App<A>>(
 		println("invoked shutdown")
 	  }
 	}
+	t?.toc("setup shutdown")
 	Thread.setDefaultUncaughtExceptionHandler(
 	  MyDefaultUncaughtExceptionHandler(
-		extraShutdownHook = { t, e, sd, st, ef ->
+		extraShutdownHook = { thr, e, sd, st, ef ->
 		  this@App.extraShutdownHook(
-			t = t, e = e, shutdown = {
+			t = thr, e = e, shutdown = {
 			  sd?.invoke()
 			}, st = st, exceptionFile = ef
 		  )
@@ -96,7 +104,9 @@ open class App<A: App<A>>(
 		},
 	  )
 	)
+	t?.toc("setup exception handler")
 	preFX?.invoke(this)
+	t?.toc("ran pre-fx")
   }
 
   fun socketServer(messageHandler: (A.(InterAppMessage)->ActionResult?)?) {
