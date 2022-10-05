@@ -5,10 +5,10 @@ import matt.auto.interapp.ActionServer
 import matt.exec.app.App
 import matt.exec.app.appName
 import matt.kjlib.socket.port.Port
-import matt.stream.message.ACTIVATE
-import matt.stream.message.ActionResult
-import matt.stream.message.InterAppMessage
-import matt.stream.message.NOTHING_TO_SEND
+import matt.model.message.ACTIVATE
+import matt.model.message.ActionResult
+import matt.model.message.InterAppMessage
+import matt.model.message.NOTHING_TO_SEND
 
 
 class AppServer<A: App<A>>(

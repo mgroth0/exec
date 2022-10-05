@@ -18,8 +18,8 @@ import matt.model.tech.md.extractMdValue
 import matt.reflect.NoArgConstructor
 import matt.reflect.annotatedKTypes
 import matt.reflect.subclasses
-import matt.stream.message.ActionResult
-import matt.stream.message.InterAppMessage
+import matt.model.message.ActionResult
+import matt.model.message.InterAppMessage
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
