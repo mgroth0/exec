@@ -1,9 +1,9 @@
 package matt.exec.app
 
 import matt.async.thread.daemon
-import matt.auto.exception.MyDefaultUncaughtExceptionHandler
-import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse
-import matt.auto.exception.MyDefaultUncaughtExceptionHandler.ExceptionResponse.EXIT
+import matt.auto.exception.AppUncaughtExceptionHandler
+import matt.auto.exception.AppUncaughtExceptionHandler.ExceptionResponse
+import matt.auto.exception.AppUncaughtExceptionHandler.ExceptionResponse.EXIT
 import matt.exec.app.appserver.AppServer
 import matt.file.MFile
 import matt.file.commons.CHANGELIST_MD
@@ -13,13 +13,13 @@ import matt.lang.go
 import matt.lang.resourceTxt
 import matt.lang.shutdown.duringShutdown
 import matt.log.profile.Stopwatch
+import matt.model.message.ActionResult
+import matt.model.message.InterAppMessage
 import matt.model.release.Version
 import matt.model.tech.md.extractMdValue
 import matt.reflect.NoArgConstructor
 import matt.reflect.annotatedKTypes
 import matt.reflect.subclasses
-import matt.model.message.ActionResult
-import matt.model.message.InterAppMessage
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
@@ -91,12 +91,16 @@ open class App<A: App<A>>(
 	}
 	t?.toc("setup shutdown")
 	Thread.setDefaultUncaughtExceptionHandler(
-	  MyDefaultUncaughtExceptionHandler(
+	  AppUncaughtExceptionHandler(
 		extraShutdownHook = { thr, e, sd, st, ef ->
 		  this@App.extraShutdownHook(
-			t = thr, e = e, shutdown = {
+			t = thr,
+			e = e,
+			shutdown = {
 			  sd?.invoke()
-			}, st = st, exceptionFile = ef
+			},
+			st = st,
+			exceptionFile = ef
 		  )
 		},
 		shutdown = {
