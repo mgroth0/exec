@@ -18,8 +18,8 @@ import matt.model.message.InterAppMessage
 import matt.model.release.Version
 import matt.model.tech.md.extractMdValue
 import matt.reflect.NoArgConstructor
-import matt.reflect.annotatedKTypes
-import matt.reflect.subclasses
+import matt.reflect.reflections.annotatedMattKTypes
+import matt.reflect.reflections.mattSubClasses
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
@@ -68,12 +68,12 @@ open class App<A: App<A>>(
 	cfg?.go { it.invoke() }    /*thread { if (!testProtoTypeSucceeded()) err("bad") }*/
 	t?.toc("did cfg")
 	daemon{
-	  InitValidator::class.subclasses().forEach { validator ->
+	  InitValidator::class.mattSubClasses().forEach { validator ->
 		require(validator.hasAnnotation<NoArgConstructor>()) { "Validators should have @NoArgConstructor" }
 		require(validator.createInstance().validate()) {
 		  "$validator did not pass"
 		}
-		val refAnnos = ValidatedOnInit::class.annotatedKTypes().map { it.findAnnotation<ValidatedOnInit>() }
+		val refAnnos = ValidatedOnInit::class.annotatedMattKTypes().map { it.findAnnotation<ValidatedOnInit>() }
 		  .filter { it!!.by == validator }
 		require(refAnnos.size == 1) {
 		  "please mark with a @ValidatedOnInit who is validated by the validator $validator"
