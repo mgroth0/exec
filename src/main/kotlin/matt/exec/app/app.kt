@@ -10,7 +10,7 @@ import matt.file.commons.hasFullFileAccess
 import matt.lang.go
 import matt.lang.resourceTxt
 import matt.lang.shutdown.duringShutdown
-import matt.log.profile.Stopwatch
+import matt.log.profile.stopwatch.Stopwatch
 import matt.log.profile.err.ExceptionResponse
 import matt.log.profile.err.ExceptionResponse.EXIT
 import matt.model.message.ActionResult
