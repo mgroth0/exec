@@ -10,9 +10,10 @@ import matt.file.commons.hasFullFileAccess
 import matt.lang.go
 import matt.lang.resourceTxt
 import matt.lang.shutdown.duringShutdown
-import matt.log.profile.stopwatch.Stopwatch
 import matt.log.profile.err.ExceptionResponse
 import matt.log.profile.err.ExceptionResponse.EXIT
+import matt.log.reporter.Reporter
+import matt.log.reporter.TracksTime
 import matt.model.message.ActionResult
 import matt.model.message.InterAppMessage
 import matt.model.release.Version
@@ -62,11 +63,11 @@ open class App<A: App<A>>(
 	shutdown: (App<*>.()->Unit)? = null,
 	preFX: (App<*>.()->Unit)? = null,
 	cfg: (()->Unit)? = null,
-	t: Stopwatch? = null
+	t: Reporter? = null
 	) {
-	t?.toc("starting main")
+	(t as? TracksTime)?.toc("starting main")
 	cfg?.go { it.invoke() }    /*thread { if (!testProtoTypeSucceeded()) err("bad") }*/
-	t?.toc("did cfg")
+	(t as? TracksTime)?.toc("did cfg")
 	daemon{
 	  InitValidator::class.mattSubClasses().forEach { validator ->
 		require(validator.hasAnnotation<NoArgConstructor>()) { "Validators should have @NoArgConstructor" }
@@ -80,7 +81,7 @@ open class App<A: App<A>>(
 		}
 	  }
 	}
-	t?.toc("started InitValidator")
+	(t as? TracksTime)?.toc("started InitValidator")
 
 	shutdown?.go {
 	  duringShutdown {
@@ -89,7 +90,7 @@ open class App<A: App<A>>(
 		println("invoked shutdown")
 	  }
 	}
-	t?.toc("setup shutdown")
+	(t as? TracksTime)?.toc("setup shutdown")
 	Thread.setDefaultUncaughtExceptionHandler(
 	  AppUncaughtExceptionHandler(
 		extraShutdownHook = { thr, e, sd, st, ef ->
@@ -108,9 +109,9 @@ open class App<A: App<A>>(
 		},
 	  )
 	)
-	t?.toc("setup exception handler")
+	(t as? TracksTime)?.toc("setup exception handler")
 	preFX?.invoke(this)
-	t?.toc("ran pre-fx")
+	(t as? TracksTime)?.toc("ran pre-fx")
   }
 
   fun socketServer(messageHandler: (A.(InterAppMessage)->ActionResult?)?) {
