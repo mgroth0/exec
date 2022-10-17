@@ -7,6 +7,7 @@ import matt.file.MFile
 import matt.file.commons.CHANGELIST_MD
 import matt.file.commons.DATA_FOLDER
 import matt.file.commons.hasFullFileAccess
+import matt.kjlib.shell.bluetoothIsOn
 import matt.lang.go
 import matt.lang.resourceTxt
 import matt.lang.shutdown.duringShutdown
@@ -33,7 +34,8 @@ val myVersion: Version by lazy { Version(extractMdValue(mdText = resourceTxt(CHA
 val myDataFolder = DATA_FOLDER[appName]
 
 open class App<A: App<A>>(
-  val args: Array<String>
+  val args: Array<String>,
+  val requiresBluetooth: Boolean = false,
 ) {
 
   companion object {
@@ -64,11 +66,14 @@ open class App<A: App<A>>(
 	preFX: (App<*>.()->Unit)? = null,
 	cfg: (()->Unit)? = null,
 	t: Reporter? = null
-	) {
+  ) {
 	(t as? TracksTime)?.toc("starting main")
+	if (requiresBluetooth) {
+	  require(bluetoothIsOn()) { "please turn on bluetooth" }
+	}
 	cfg?.go { it.invoke() }    /*thread { if (!testProtoTypeSucceeded()) err("bad") }*/
 	(t as? TracksTime)?.toc("did cfg")
-	daemon{
+	daemon {
 	  InitValidator::class.mattSubClasses().forEach { validator ->
 		require(validator.hasAnnotation<NoArgConstructor>()) { "Validators should have @NoArgConstructor" }
 		require(validator.createInstance().validate()) {
