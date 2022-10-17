@@ -67,6 +67,7 @@ open class App<A: App<A>>(
 	cfg: (()->Unit)? = null,
 	t: Reporter? = null
   ) {
+	println("Kotlin Version = ${KotlinVersion.CURRENT}")
 	(t as? TracksTime)?.toc("starting main")
 	if (requiresBluetooth) {
 	  require(bluetoothIsOn()) { "please turn on bluetooth" }
