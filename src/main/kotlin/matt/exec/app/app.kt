@@ -13,11 +13,11 @@ import matt.lang.resourceTxt
 import matt.lang.shutdown.duringShutdown
 import matt.log.profile.err.ExceptionResponse
 import matt.log.profile.err.ExceptionResponse.EXIT
-import matt.log.reporter.Reporter
 import matt.log.reporter.TracksTime
 import matt.model.message.ActionResult
 import matt.model.message.InterAppMessage
 import matt.model.release.Version
+import matt.model.report.Reporter
 import matt.model.tech.md.extractMdValue
 import matt.reflect.NoArgConstructor
 import matt.reflect.reflections.annotatedMattKTypes
