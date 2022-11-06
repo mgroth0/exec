@@ -8,6 +8,7 @@ import matt.file.commons.CHANGELIST_MD
 import matt.file.commons.DATA_FOLDER
 import matt.file.commons.hasFullFileAccess
 import matt.kjlib.shell.bluetoothIsOn
+import matt.lang.anno.Duplicated
 import matt.lang.go
 import matt.lang.resourceTxt
 import matt.lang.shutdown.duringShutdown
@@ -27,6 +28,7 @@ import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
+@Duplicated
 val appName by lazy { resourceTxt("matt/appname.txt")!! }
 val myVersion: Version by lazy { Version(extractMdValue(mdText = resourceTxt(CHANGELIST_MD)!!, key = "VERSION")!!) }
 
