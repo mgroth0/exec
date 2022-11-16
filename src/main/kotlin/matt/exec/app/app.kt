@@ -10,6 +10,7 @@ import matt.file.commons.hasFullFileAccess
 import matt.kjlib.shell.bluetoothIsOn
 import matt.lang.go
 import matt.lang.shutdown.duringShutdown
+import matt.log.logger.Logger
 import matt.log.profile.err.ExceptionResponse
 import matt.log.profile.err.ExceptionResponse.EXIT
 import matt.log.reporter.TracksTime
@@ -67,7 +68,7 @@ open class App<A: App<A>>(
 	cfg: (()->Unit)? = null,
 	t: Reporter? = null
   ) {
-	println("Kotlin Version = ${KotlinVersion.CURRENT}")
+	(t as? Logger)?.info("Kotlin Version = ${KotlinVersion.CURRENT}")
 	(t as? TracksTime)?.toc("starting main")
 	if (requiresBluetooth) {
 	  require(bluetoothIsOn()) { "please turn on bluetooth" }
