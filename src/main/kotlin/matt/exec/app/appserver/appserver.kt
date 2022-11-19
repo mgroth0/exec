@@ -4,10 +4,10 @@ import matt.auto.activateThisProcess
 import matt.auto.interapp.ActionServer
 import matt.exec.app.App
 import matt.kjlib.socket.port.Port
-import matt.model.message.ACTIVATE
-import matt.model.message.ActionResult
-import matt.model.message.InterAppMessage
-import matt.model.message.NOTHING_TO_SEND
+import matt.model.data.message.ACTIVATE
+import matt.model.data.message.ActionResult
+import matt.model.data.message.InterAppMessage
+import matt.model.data.message.NOTHING_TO_SEND
 import matt.mstruct.rstruct.appName
 
 

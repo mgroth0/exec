@@ -14,11 +14,11 @@ import matt.log.logger.Logger
 import matt.log.profile.err.ExceptionResponse
 import matt.log.profile.err.ExceptionResponse.EXIT
 import matt.log.reporter.TracksTime
-import matt.model.message.ActionResult
-import matt.model.message.InterAppMessage
-import matt.model.release.Version
-import matt.model.report.Reporter
-import matt.model.tech.md.extractMdValue
+import matt.model.data.message.ActionResult
+import matt.model.data.message.InterAppMessage
+import matt.model.data.release.Version
+import matt.model.code.report.Reporter
+import matt.model.op.tech.md.extractMdValue
 import matt.mstruct.rstruct.appName
 import matt.mstruct.rstruct.resourceTxt
 import matt.reflect.NoArgConstructor
