@@ -17,19 +17,9 @@
 	  "path" : ":k:kjlib:socket"
 	},
 	{
-	  "type" : "matt.mstruct.bj.BuildJsonLibDependency",
-	  "cfg" :  "implementation",
-	  "key" :  "kotlinx-coroutines"
-	},
-	{
 	  "type" : "matt.mstruct.bj.BuildJsonProjectDependency",
 	  "cfg" :  "implementation",
 	  "path" : ":k:reflect"
-	},
-	{
-	  "type" : "matt.mstruct.bj.BuildJsonProjectDependency",
-	  "cfg" :  "api",
-	  "path" : ":k:model"
 	}
   ],
   "note" :         null
