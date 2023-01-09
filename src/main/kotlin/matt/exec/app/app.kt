@@ -14,10 +14,11 @@ import matt.log.logger.Logger
 import matt.log.profile.err.ExceptionResponse
 import matt.log.profile.err.ExceptionResponse.EXIT
 import matt.log.reporter.TracksTime
+import matt.model.code.report.Reporter
 import matt.model.data.message.ActionResult
 import matt.model.data.message.InterAppMessage
 import matt.model.data.release.Version
-import matt.model.code.report.Reporter
+import matt.model.op.prints.Prints
 import matt.model.op.tech.md.extractMdValue
 import matt.mstruct.rstruct.appName
 import matt.mstruct.rstruct.resourceTxt
@@ -92,9 +93,9 @@ open class App<A: App<A>>(
 
 	shutdown?.go {
 	  duringShutdown {
-		println("invoking shutdown")
+		(t as? Prints)?.println("invoking shutdown")
 		it.invoke(this)
-		println("invoked shutdown")
+		(t as? Prints)?.println("invoked shutdown")
 	  }
 	}
 	(t as? TracksTime)?.toc("setup shutdown")
