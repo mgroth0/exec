@@ -6,7 +6,9 @@ import matt.exec.app.appserver.AppServer
 import matt.file.MFile
 import matt.file.commons.CHANGELIST_MD
 import matt.file.commons.DATA_FOLDER
+import matt.file.commons.LogContext
 import matt.file.commons.hasFullFileAccess
+import matt.file.commons.mattLogContext
 import matt.kjlib.shell.bluetoothIsOn
 import matt.lang.go
 import matt.lang.shutdown.duringShutdown
@@ -67,7 +69,8 @@ open class App<A: App<A>>(
 	shutdown: (App<*>.()->Unit)? = null,
 	preFX: (App<*>.()->Unit)? = null,
 	cfg: (()->Unit)? = null,
-	t: Reporter? = null
+	logContext: LogContext = mattLogContext,
+	t: Reporter? = null,
   ) {
 	(t as? Logger)?.info("Kotlin Version = ${KotlinVersion.CURRENT}")
 	(t as? TracksTime)?.toc("starting main")
@@ -101,6 +104,7 @@ open class App<A: App<A>>(
 	(t as? TracksTime)?.toc("setup shutdown")
 	Thread.setDefaultUncaughtExceptionHandler(
 	  AppUncaughtExceptionHandler(
+		logContext = logContext,
 		extraShutdownHook = { thr, e, sd, st, ef ->
 		  this@App.extraShutdownHook(
 			t = thr,
