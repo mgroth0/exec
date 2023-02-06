@@ -8,14 +8,14 @@ import matt.model.data.message.ACTIVATE
 import matt.model.data.message.ActionResult
 import matt.model.data.message.InterAppMessage
 import matt.model.data.message.NOTHING_TO_SEND
-import matt.mstruct.rstruct.appName
+import matt.mstruct.rstruct.modID
 
 
 class AppServer<A: App<A>>(
   app: A,
   messageHandler: (A.(InterAppMessage)->ActionResult?)? = null
 ): ActionServer(
-  Port(appName),
+  Port(modID.appName),
   messageHandler = { x: InterAppMessage ->
 	when (x) {
 	  is ACTIVATE -> {

@@ -22,7 +22,7 @@ import matt.model.data.message.InterAppMessage
 import matt.model.data.release.Version
 import matt.model.op.prints.Prints
 import matt.model.op.tech.md.extractMdValue
-import matt.mstruct.rstruct.appName
+import matt.mstruct.rstruct.modID
 import matt.mstruct.rstruct.resourceTxt
 import matt.reflect.NoArgConstructor
 import matt.reflect.reflections.annotatedMattKTypes
@@ -35,7 +35,7 @@ import kotlin.reflect.full.hasAnnotation
 val myVersion: Version by lazy { Version(extractMdValue(mdText = resourceTxt(CHANGELIST_MD)!!, key = "VERSION")!!) }
 
 
-val myDataFolder = DATA_FOLDER[appName]
+val myDataFolder by lazy { DATA_FOLDER[modID.appName] }
 
 open class App<A: App<A>>(
   val args: Array<String>,
