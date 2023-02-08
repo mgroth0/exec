@@ -4,7 +4,6 @@ import matt.async.thread.daemon
 import matt.auto.exception.AppUncaughtExceptionHandler
 import matt.exec.app.appserver.AppServer
 import matt.file.MFile
-import matt.file.commons.CHANGELIST_MD
 import matt.file.commons.DATA_FOLDER
 import matt.file.commons.LogContext
 import matt.file.commons.hasFullFileAccess
@@ -21,9 +20,7 @@ import matt.model.data.message.ActionResult
 import matt.model.data.message.InterAppMessage
 import matt.model.data.release.Version
 import matt.model.op.prints.Prints
-import matt.model.op.tech.md.extractMdValue
 import matt.mstruct.rstruct.modID
-import matt.mstruct.rstruct.resourceTxt
 import matt.reflect.NoArgConstructor
 import matt.reflect.reflections.annotatedMattKTypes
 import matt.reflect.reflections.mattSubClasses
@@ -32,7 +29,17 @@ import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
-val myVersion: Version by lazy { Version(extractMdValue(mdText = resourceTxt(CHANGELIST_MD)!!, key = "VERSION")!!) }
+val myVersion: Version by lazy {
+
+
+  /*Version(extractMdValue(mdText = resourceTxt(CHANGELIST_MD)!!, key = "VERSION")!!)*/
+
+
+  Version(modID.version)
+
+
+
+}
 
 
 val myDataFolder by lazy { DATA_FOLDER[modID.appName] }
