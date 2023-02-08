@@ -35,7 +35,7 @@ val myVersion: Version by lazy {
   /*Version(extractMdValue(mdText = resourceTxt(CHANGELIST_MD)!!, key = "VERSION")!!)*/
 
 
-  Version(modID.version)
+  modID.version
 
 
 
