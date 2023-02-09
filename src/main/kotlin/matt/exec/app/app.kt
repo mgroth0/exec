@@ -10,9 +10,11 @@ import matt.kjlib.shell.bluetoothIsOn
 import matt.lang.go
 import matt.lang.shutdown.duringShutdown
 import matt.log.logger.Logger
+import matt.log.profile.err.ExceptionResponse
 import matt.log.reporter.TracksTime
 import matt.model.code.report.Reporter
 import matt.model.data.message.ActionResult
+import matt.model.data.message.EXIT
 import matt.model.data.message.InterAppMessage
 import matt.model.data.release.Version
 import matt.model.op.prints.Prints
@@ -64,7 +66,7 @@ open class App<A: App<A>>(
 	t: Thread, e: Throwable, shutdown: (App<*>.()->Unit)? = null, st: String, exceptionFile: MFile
   ): ExceptionResponse {
 	println("in extraShutdownHook")
-	return EXIT
+	return ExceptionResponse.EXIT
   }
 
 
