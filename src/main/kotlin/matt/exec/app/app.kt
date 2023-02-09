@@ -1,6 +1,7 @@
 package matt.exec.app
 
 import matt.async.thread.daemon
+import matt.exec.exception.AppUncaughtExceptionHandler
 import matt.file.MFile
 import matt.file.commons.DATA_FOLDER
 import matt.file.commons.LogContext
@@ -13,10 +14,6 @@ import matt.log.logger.Logger
 import matt.log.profile.err.ExceptionResponse
 import matt.log.reporter.TracksTime
 import matt.model.code.report.Reporter
-import matt.model.code.valjson.ValJson.Port
-import matt.model.data.message.ActionResult
-import matt.model.data.message.EXIT
-import matt.model.data.message.InterAppMessage
 import matt.model.data.release.Version
 import matt.model.op.prints.Prints
 import matt.mstruct.rstruct.modID
