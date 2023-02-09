@@ -9,6 +9,11 @@
 	{
 	  "type" : "Project",
 	  "cfg" :  "api",
+	  "path" : ":k:log:profile"
+	},
+	{
+	  "type" : "Project",
+	  "cfg" :  "api",
 	  "path" : ":k:mstruct:rstruct"
 	},
 	{

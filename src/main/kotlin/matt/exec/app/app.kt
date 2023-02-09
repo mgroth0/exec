@@ -1,8 +1,6 @@
 package matt.exec.app
 
 import matt.async.thread.daemon
-import matt.auto.exception.AppUncaughtExceptionHandler
-import matt.exec.app.appserver.AppServer
 import matt.file.MFile
 import matt.file.commons.DATA_FOLDER
 import matt.file.commons.LogContext
@@ -12,8 +10,6 @@ import matt.kjlib.shell.bluetoothIsOn
 import matt.lang.go
 import matt.lang.shutdown.duringShutdown
 import matt.log.logger.Logger
-import matt.log.profile.err.ExceptionResponse
-import matt.log.profile.err.ExceptionResponse.EXIT
 import matt.log.reporter.TracksTime
 import matt.model.code.report.Reporter
 import matt.model.data.message.ActionResult
