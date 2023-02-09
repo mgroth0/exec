@@ -13,6 +13,7 @@ import matt.log.logger.Logger
 import matt.log.profile.err.ExceptionResponse
 import matt.log.reporter.TracksTime
 import matt.model.code.report.Reporter
+import matt.model.code.valjson.ValJson.Port
 import matt.model.data.message.ActionResult
 import matt.model.data.message.EXIT
 import matt.model.data.message.InterAppMessage
@@ -131,13 +132,8 @@ open class App<A: App<A>>(
 	(t as? TracksTime)?.toc("ran pre-fx")
   }
 
-  fun socketServer(messageHandler: (A.(InterAppMessage)->ActionResult?)?) {
-	println("making socketServer")
-	@Suppress("UNCHECKED_CAST")
-	val server = AppServer(this as A, messageHandler)
-	println("got server")
-	server.coreLoop(threaded = true)
-	println("ran core loop")
+  val port by lazy {
+	matt.kjlib.socket.port.Port(modID.appName)
   }
 
 }
