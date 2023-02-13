@@ -23,6 +23,7 @@ class AppUncaughtExceptionHandler(
 	  logContext.logFolder["exceptions"]
 	}
 
+	exceptionFolder.mkdirs()
 	val exceptionFile by lazy {
 	  exceptionFolder.getNextSubIndexedFileWork("exception.txt", 100)()
 	}
