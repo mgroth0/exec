@@ -28,11 +28,10 @@ import kotlin.reflect.full.hasAnnotation
 val myVersion: Version by lazy {
 
 
-  /*Version(extractMdValue(mdText = resourceTxt(CHANGELIST_MD)!!, key = "VERSION")!!)*/
+    /*Version(extractMdValue(mdText = resourceTxt(CHANGELIST_MD)!!, key = "VERSION")!!)*/
 
 
-  modID.version
-
+    modID.version
 
 
 }
@@ -40,104 +39,112 @@ val myVersion: Version by lazy {
 
 val myDataFolder by lazy { DATA_FOLDER[modID.appName] }
 
-open class App<A: App<A>>(
-  val args: Array<String>,
-  val requiresBluetooth: Boolean = false,
+open class App<A : App<A>>(
+    val args: Array<String>,
+    val requiresBluetooth: Boolean = false,
 ) {
 
-  companion object {
-	protected var flowApp: App<*>? = null
-  }
+    companion object {
+        protected var flowApp: App<*>? = null
+    }
 
-  init {
-	flowApp = this
-  }
+    init {
+        flowApp = this
+    }
 
-  fun requireAccessToDownloadsAndDesktopFolders() {
-	require(hasFullFileAccess()) {
-	  "file access issue"
-	}
-  }
-
-
-  open fun extraShutdownHook(
-	t: Thread, e: Throwable, shutdown: (App<*>.()->Unit)? = null, st: String, exceptionFile: MFile
-  ): ExceptionResponse {
-	println("in extraShutdownHook")
-	return ExceptionResponse.EXIT
-  }
+    fun requireAccessToDownloadsAndDesktopFolders() {
+        require(hasFullFileAccess()) {
+            "file access issue"
+        }
+    }
 
 
-  protected fun main(
-	shutdown: (App<*>.()->Unit)? = null,
-	preFX: (App<*>.()->Unit)? = null,
-	cfg: (()->Unit)? = null,
-	logContext: LogContext = mattLogContext,
-	t: Reporter? = null,
-  ) {
-	(t as? Logger)?.info("Kotlin Version = ${KotlinVersion.CURRENT}")
-	(t as? TracksTime)?.toc("starting main")
-	if (requiresBluetooth) {
-	  require(bluetoothIsOn()) { "please turn on bluetooth" }
-	}
-	cfg?.go { it.invoke() }    /*thread { if (!testProtoTypeSucceeded()) err("bad") }*/
-	(t as? TracksTime)?.toc("did cfg")
-	daemon {
-	  InitValidator::class.mattSubClasses().forEach { validator ->
-		require(validator.hasAnnotation<NoArgConstructor>()) { "Validators should have @NoArgConstructor" }
-		require(validator.createInstance().validate()) {
-		  "$validator did not pass"
-		}
-		val refAnnos = ValidatedOnInit::class.annotatedMattKTypes().map { it.findAnnotation<ValidatedOnInit>() }
-		  .filter { it!!.by == validator }
-		require(refAnnos.size == 1) {
-		  "please mark with a @ValidatedOnInit who is validated by the validator $validator"
-		}
-	  }
-	}
-	(t as? TracksTime)?.toc("started InitValidator")
+    open fun extraShutdownHook(
+        t: Thread, e: Throwable, shutdown: (App<*>.() -> Unit)? = null, st: String, exceptionFile: MFile
+    ): ExceptionResponse {
+        println("in extraShutdownHook")
+        return ExceptionResponse.EXIT
+    }
 
-	shutdown?.go {
-	  duringShutdown {
-		(t as? Prints)?.println("invoking shutdown")
-		it.invoke(this)
-		(t as? Prints)?.println("invoked shutdown")
-	  }
-	}
-	(t as? TracksTime)?.toc("setup shutdown")
-	Thread.setDefaultUncaughtExceptionHandler(
-	  AppUncaughtExceptionHandler(
-		logContext = logContext,
-		extraShutdownHook = { thr, e, sd, st, ef ->
-		  this@App.extraShutdownHook(
-			t = thr,
-			e = e,
-			shutdown = {
-			  sd?.invoke()
-			},
-			st = st,
-			exceptionFile = ef
-		  )
-		},
-		shutdown = {
-		  shutdown?.invoke(this@App)
-		},
-	  )
-	)
-	(t as? TracksTime)?.toc("setup exception handler")
-	preFX?.invoke(this)
-	(t as? TracksTime)?.toc("ran pre-fx")
-  }
 
-  val port by lazy {
-	matt.kjlib.socket.port.Port(modID.appName)
-  }
+    protected fun main(
+        shutdown: (App<*>.() -> Unit)? = null,
+        preFX: (App<*>.() -> Unit)? = null,
+        cfg: (() -> Unit)? = null,
+        logContext: LogContext = mattLogContext,
+        t: Reporter? = null,
+    ) {
+        (t as? Logger)?.info("Kotlin Version = ${KotlinVersion.CURRENT}")
+        (t as? TracksTime)?.toc("starting main")
+        if (requiresBluetooth) {
+            require(bluetoothIsOn()) { "please turn on bluetooth" }
+        }
+        cfg?.go { it.invoke() }    /*thread { if (!testProtoTypeSucceeded()) err("bad") }*/
+        (t as? TracksTime)?.toc("did cfg")
+        daemon {
+            InitValidator::class.mattSubClasses().forEach { validator ->
+                require(validator.hasAnnotation<NoArgConstructor>()) { "Validators should have @NoArgConstructor" }
+                require(validator.createInstance().validate()) {
+                    "$validator did not pass"
+                }
+                val refAnnos = ValidatedOnInit::class.annotatedMattKTypes().map { it.findAnnotation<ValidatedOnInit>() }
+                    .filter { it!!.by == validator }
+                require(refAnnos.size == 1) {
+                    "please mark with a @ValidatedOnInit who is validated by the validator $validator"
+                }
+            }
+        }
+        (t as? TracksTime)?.toc("started InitValidator")
+
+        shutdown?.go {
+            duringShutdown {
+                (t as? Prints)?.println("invoking shutdown")
+                it.invoke(this)
+                (t as? Prints)?.println("invoked shutdown")
+            }
+        }
+        (t as? TracksTime)?.toc("setup shutdown")
+
+        val exceptionHandler = AppUncaughtExceptionHandler(
+            logContext = logContext,
+            extraShutdownHook = { thr, e, sd, st, ef ->
+                this@App.extraShutdownHook(
+                    t = thr,
+                    e = e,
+                    shutdown = {
+                        sd?.invoke()
+                    },
+                    st = st,
+                    exceptionFile = ef
+                )
+            },
+            shutdown = {
+                shutdown?.invoke(this@App)
+            },
+        )
+
+        Thread.setDefaultUncaughtExceptionHandler(exceptionHandler)
+        /*Thread.getAllStackTraces()
+        Thread.getAllStackTraces().keys.forEach {
+            val previous = it.uncaughtExceptionHandler
+            if (previous == null || previous is ThreadGroup) {
+                it.uncaughtExceptionHandler = exceptionHandler
+            }
+        }*/
+        (t as? TracksTime)?.toc("setup exception handler")
+        preFX?.invoke(this)
+        (t as? TracksTime)?.toc("ran pre-fx")
+    }
+
+    val port by lazy {
+        matt.kjlib.socket.port.Port(modID.appName)
+    }
 
 }
 
 
 interface InitValidator {
-  fun validate(): Boolean
+    fun validate(): Boolean
 }
 
 annotation class ValidatedOnInit(val by: KClass<out InitValidator>)
