@@ -14,7 +14,7 @@
 	{
 	  "type" : "Project",
 	  "cfg" :  "api",
-	  "path" : ":k:mstruct:rstruct"
+	  "path" : ":k:rstruct"
 	},
 	{
 	  "type" : "Project",

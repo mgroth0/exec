@@ -16,7 +16,7 @@ import matt.log.reporter.TracksTime
 import matt.model.code.report.Reporter
 import matt.model.data.release.Version
 import matt.model.op.prints.Prints
-import matt.mstruct.rstruct.modID
+import matt.rstruct.modID
 import matt.reflect.NoArgConstructor
 import matt.reflect.reflections.annotatedMattKTypes
 import matt.reflect.reflections.mattSubClasses
