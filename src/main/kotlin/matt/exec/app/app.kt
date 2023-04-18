@@ -16,10 +16,10 @@ import matt.log.reporter.TracksTime
 import matt.model.code.report.Reporter
 import matt.model.data.release.Version
 import matt.model.op.prints.Prints
-import matt.rstruct.modID
 import matt.reflect.NoArgConstructor
 import matt.reflect.reflections.annotatedMattKTypes
 import matt.reflect.reflections.mattSubClasses
+import matt.rstruct.modID
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
@@ -81,7 +81,7 @@ open class App<A : App<A>>(
         }
         cfg?.go { it.invoke() }    /*thread { if (!testProtoTypeSucceeded()) err("bad") }*/
         (t as? TracksTime)?.toc("did cfg")
-        daemon {
+        daemon(name = "initValidator") {
             InitValidator::class.mattSubClasses().forEach { validator ->
                 require(validator.hasAnnotation<NoArgConstructor>()) { "Validators should have @NoArgConstructor" }
                 require(validator.createInstance().validate()) {
