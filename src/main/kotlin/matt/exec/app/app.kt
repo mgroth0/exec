@@ -20,6 +20,7 @@ import matt.reflect.NoArgConstructor
 import matt.reflect.reflections.annotatedMattKTypes
 import matt.reflect.reflections.mattSubClasses
 import matt.rstruct.modID
+import matt.socket.port.Port
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
@@ -137,7 +138,7 @@ open class App<A : App<A>>(
     }
 
     val port by lazy {
-        matt.kjlib.socket.port.Port(modID.appName)
+        Port(modID.appName)
     }
 
 }
