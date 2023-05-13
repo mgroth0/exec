@@ -7,7 +7,6 @@ import matt.file.commons.DATA_FOLDER
 import matt.file.commons.LogContext
 import matt.file.commons.hasFullFileAccess
 import matt.file.commons.mattLogContext
-import matt.kjlib.shell.bluetooth.bluetoothIsOn
 import matt.lang.go
 import matt.lang.shutdown.duringShutdown
 import matt.log.logger.Logger
@@ -20,11 +19,14 @@ import matt.reflect.NoArgConstructor
 import matt.reflect.reflections.annotatedMattKTypes
 import matt.reflect.reflections.mattSubClasses
 import matt.rstruct.modID
+import matt.shell.shell
 import matt.socket.port.Port
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
+
+fun bluetoothIsOn() = "State: On" in shell("/usr/sbin/system_profiler", "SPBluetoothDataType")
 
 val myVersion: Version by lazy {
 
