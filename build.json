@@ -4,7 +4,7 @@
     {
       "type": "Project",
       "cfg": "api",
-      "path": ":k:async"
+      "path": ":k:async:thread"
     },
     {
       "type": "Project",
