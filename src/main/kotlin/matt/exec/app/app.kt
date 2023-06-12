@@ -13,6 +13,7 @@ import matt.log.logger.Logger
 import matt.log.profile.err.ExceptionResponse
 import matt.log.reporter.TracksTime
 import matt.model.code.report.Reporter
+import matt.model.code.valjson.PortRegistry
 import matt.model.data.release.Version
 import matt.model.op.prints.Prints
 import matt.reflect.NoArgConstructor
@@ -140,7 +141,18 @@ open class App<A : App<A>>(
     }
 
     val port by lazy {
-        Port(modID.appName)
+        val p = when (modID.appName) {
+            "task"       -> PortRegistry.task
+            "top"        -> PortRegistry.top
+            "notify"     -> PortRegistry.notify
+            "launch"     -> PortRegistry.launch
+            "brainstorm" -> PortRegistry.brainstorm
+            "kjg"        -> PortRegistry.kjg
+            "pdf"        -> PortRegistry.pdf
+            "spotify"    -> PortRegistry.spotify
+            else         -> error("need to configure port for ${modID.appName}")
+        }
+        Port(p)
     }
 
 }
