@@ -150,6 +150,7 @@ open class App<A : App<A>>(
             "kjg"        -> PortRegistry.kjg
             "pdf"        -> PortRegistry.pdf
             "spotify"    -> PortRegistry.spotify
+            "fxgui"      -> PortRegistry.omniFxGui
             else         -> error("need to configure port for ${modID.appName}")
         }
         Port(p)
