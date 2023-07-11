@@ -8,6 +8,7 @@ import matt.file.commons.LogContext
 import matt.file.commons.hasFullFileAccess
 import matt.file.commons.mattLogContext
 import matt.lang.go
+import matt.lang.require.requireOne
 import matt.lang.shutdown.duringShutdown
 import matt.log.logger.Logger
 import matt.log.profile.err.ExceptionResponse
@@ -64,7 +65,11 @@ open class App<A : App<A>>(
 
 
     open fun extraShutdownHook(
-        t: Thread, e: Throwable, shutdown: (App<*>.() -> Unit)? = null, st: String, exceptionFile: MFile
+        t: Thread,
+        e: Throwable,
+        shutdown: (App<*>.() -> Unit)? = null,
+        st: String,
+        exceptionFile: MFile
     ): ExceptionResponse {
         println("in extraShutdownHook")
         return ExceptionResponse.EXIT
@@ -93,7 +98,7 @@ open class App<A : App<A>>(
                 }
                 val refAnnos = ValidatedOnInit::class.annotatedMattKTypes().map { it.findAnnotation<ValidatedOnInit>() }
                     .filter { it!!.by == validator }
-                require(refAnnos.size == 1) {
+                requireOne(refAnnos.size) {
                     "please mark with a @ValidatedOnInit who is validated by the validator $validator"
                 }
             }
