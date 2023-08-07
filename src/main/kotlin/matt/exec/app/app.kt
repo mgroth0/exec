@@ -14,7 +14,7 @@ import matt.log.logger.Logger
 import matt.log.profile.err.ExceptionResponse
 import matt.log.reporter.TracksTime
 import matt.model.code.report.Reporter
-import matt.model.code.valjson.PortRegistry
+import matt.model.code.vals.portreg.PortRegistry
 import matt.model.data.release.Version
 import matt.model.op.prints.Prints
 import matt.reflect.NoArgConstructor
@@ -82,6 +82,7 @@ open class App<A : App<A>>(
         cfg: (() -> Unit)? = null,
         logContext: LogContext = mattLogContext,
         t: Reporter? = null,
+        enableExceptionAndShutdownHandlers: Boolean = true
     ) {
         (t as? Logger)?.info("Kotlin Version = ${KotlinVersion.CURRENT}")
         (t as? TracksTime)?.toc("starting main")
@@ -105,34 +106,40 @@ open class App<A : App<A>>(
         }
         (t as? TracksTime)?.toc("started InitValidator")
 
-        shutdown?.go {
-            duringShutdown {
-                (t as? Prints)?.println("invoking shutdown")
-                it.invoke(this)
-                (t as? Prints)?.println("invoked shutdown")
+
+
+        if (enableExceptionAndShutdownHandlers) {
+            shutdown?.go {
+                duringShutdown {
+                    (t as? Prints)?.println("invoking shutdown")
+                    it.invoke(this)
+                    (t as? Prints)?.println("invoked shutdown")
+                }
             }
+            (t as? TracksTime)?.toc("setup shutdown")
+            val exceptionHandler = AppUncaughtExceptionHandler(
+                logContext = logContext,
+                extraShutdownHook = { thr, e, sd, st, ef ->
+                    this@App.extraShutdownHook(
+                        t = thr,
+                        e = e,
+                        shutdown = {
+                            sd?.invoke()
+                        },
+                        st = st,
+                        exceptionFile = ef
+                    )
+                },
+                shutdown = {
+                    shutdown?.invoke(this@App)
+                },
+            )
+
+            Thread.setDefaultUncaughtExceptionHandler(exceptionHandler)
         }
-        (t as? TracksTime)?.toc("setup shutdown")
 
-        val exceptionHandler = AppUncaughtExceptionHandler(
-            logContext = logContext,
-            extraShutdownHook = { thr, e, sd, st, ef ->
-                this@App.extraShutdownHook(
-                    t = thr,
-                    e = e,
-                    shutdown = {
-                        sd?.invoke()
-                    },
-                    st = st,
-                    exceptionFile = ef
-                )
-            },
-            shutdown = {
-                shutdown?.invoke(this@App)
-            },
-        )
 
-        Thread.setDefaultUncaughtExceptionHandler(exceptionHandler)
+
         /*Thread.getAllStackTraces()
         Thread.getAllStackTraces().keys.forEach {
             val previous = it.uncaughtExceptionHandler
