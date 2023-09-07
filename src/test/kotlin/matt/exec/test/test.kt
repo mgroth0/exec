@@ -8,6 +8,6 @@ import kotlin.test.Test
 class ExecTests {
     @Test
     fun constructClasses() = assertRunsInOneMinute {
-        App(arrayOf("a,b,c"))
+        App()
     }
 }

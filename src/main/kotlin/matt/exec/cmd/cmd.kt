@@ -10,10 +10,9 @@ import matt.log.taball
 class CommandLineApp(
     val welcomeMessage: String? = null,
     mainPrompt: String,
-    args: Array<String> = arrayOf(),
     private val cfg: (() -> Unit)? = null,
     private val cmdDSL: CommandLineApp.() -> Unit
-) : App<CommandLineApp>(args) {
+) : App<CommandLineApp>() {
 
     fun start(
         shutdown: (App<*>.() -> Unit)? = null,

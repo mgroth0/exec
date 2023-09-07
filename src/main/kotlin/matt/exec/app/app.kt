@@ -45,7 +45,6 @@ val myVersion: Version by lazy {
 val myDataFolder by lazy { DATA_FOLDER[modID.appName] }
 
 open class App<A : App<A>>(
-    val args: Array<String>,
     val requiresBluetooth: Boolean = false,
 ) {
 
