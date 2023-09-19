@@ -1,8 +1,8 @@
 package matt.exec.exception
 
-import matt.lang.model.file.FsFile
 import matt.file.commons.LogContext
 import matt.file.ext.getNextSubIndexedFileWork
+import matt.lang.model.file.FsFile
 import matt.log.profile.err.ExceptionResponse
 import matt.log.profile.err.StructuredExceptionHandler
 import matt.model.code.errreport.Report
@@ -23,6 +23,8 @@ class AppUncaughtExceptionHandler(
         report: Report
     ): ExceptionResponse {
         println("handException1")
+        println("handException1.5: ${t},${e},${e.message}")
+        e.printStackTrace()
         report.print()
         println("handException2")
 
