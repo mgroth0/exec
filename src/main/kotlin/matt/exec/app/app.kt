@@ -1,24 +1,31 @@
 package matt.exec.app
 
+import matt.async.thread.TheThreadProvider
 import matt.exec.app.initvalidator.startInitValidator
 import matt.exec.exception.AppUncaughtExceptionHandler
-import matt.file.MFile
+import matt.lang.model.file.FsFile
 import matt.file.commons.DATA_FOLDER
 import matt.file.commons.LogContext
 import matt.file.commons.hasFullFileAccess
 import matt.file.commons.mattLogContext
 import matt.lang.go
-import matt.lang.shutdown.duringShutdown
+import matt.lang.shutdown.ShutdownContext
+import matt.lang.shutdown.ShutdownExecutorImpl
+import matt.lang.shutdown.preaper.ProcessReaper
+import matt.lang.shutdown.preaper.ProcessReaperImpl
 import matt.log.logger.Logger
 import matt.log.profile.err.ExceptionResponse
 import matt.model.code.report.Reporter
 import matt.model.code.vals.portreg.PortRegistry
 import matt.model.data.release.Version
 import matt.rstruct.modID
+import matt.shell.context.DefaultMacExecutionContext
+import matt.shell.context.withReaper
 import matt.shell.shell
 import matt.socket.port.Port
 import kotlin.reflect.KClass
 
+context(ProcessReaper)
 fun bluetoothIsOn() = "State: On" in shell("/usr/sbin/system_profiler", "SPBluetoothDataType")
 
 val myVersion: Version by lazy {
@@ -31,13 +38,16 @@ val myVersion: Version by lazy {
 
 
 }
-
+fun contextForMainOnly() =
+    DefaultMacExecutionContext.withReaper(ProcessReaperImpl(TheThreadProvider, ShutdownExecutorImpl()))
 
 val myDataFolder by lazy { DATA_FOLDER[modID.appName] }
 
+context(ShutdownContext)
 open class App<A : App<A>>(
     val requiresBluetooth: Boolean = false,
 ) {
+    val processReaper = ProcessReaperImpl(TheThreadProvider, this@ShutdownContext)
 
     companion object {
         protected var flowApp: App<*>? = null
@@ -59,7 +69,7 @@ open class App<A : App<A>>(
         e: Throwable,
         shutdown: (App<*>.() -> Unit)? = null,
         st: String,
-        exceptionFile: MFile
+        exceptionFile: FsFile
     ): ExceptionResponse {
         println("in extraShutdownHook")
         return ExceptionResponse.EXIT
@@ -74,45 +84,47 @@ open class App<A : App<A>>(
         t: Reporter? = null,
         enableExceptionAndShutdownHandlers: Boolean = true
     ) {
-        (t as? Logger)?.info("Kotlin Version = ${KotlinVersion.CURRENT}")
-        if (requiresBluetooth) {
-            require(bluetoothIsOn()) { "please turn on bluetooth" }
-        }
-        cfg?.go { it.invoke() }
-        startInitValidator()
+        with(processReaper) {
+            (t as? Logger)?.info("Kotlin Version = ${KotlinVersion.CURRENT}")
+            if (requiresBluetooth) {
+                require(bluetoothIsOn()) { "please turn on bluetooth" }
+            }
+            cfg?.go { it.invoke() }
+            startInitValidator()
 
-        if (enableExceptionAndShutdownHandlers) {
-            shutdown?.go {
-                duringShutdown {
-                    it.invoke(this)
+            if (enableExceptionAndShutdownHandlers) {
+                shutdown?.go {
+                    duringShutdown {
+                        it.invoke(this@App)
+                    }
                 }
-            }
-            val exceptionHandler = AppUncaughtExceptionHandler(
-                logContext = logContext,
-                extraShutdownHook = { thr, e, sd, st, ef ->
-                    this@App.extraShutdownHook(
-                        t = thr, e = e, shutdown = {
-                            sd?.invoke()
-                        }, st = st, exceptionFile = ef
-                    )
-                },
-                shutdown = {
-                    shutdown?.invoke(this@App)
-                },
-            )
+                val exceptionHandler = AppUncaughtExceptionHandler(
+                    logContext = logContext,
+                    extraShutdownHook = { thr, e, sd, st, ef ->
+                        this@App.extraShutdownHook(
+                            t = thr, e = e, shutdown = {
+                                sd?.invoke()
+                            }, st = st, exceptionFile = ef
+                        )
+                    },
+                    shutdown = {
+                        shutdown?.invoke(this@App)
+                    },
+                )
 
-            Thread.setDefaultUncaughtExceptionHandler(exceptionHandler)
+                Thread.setDefaultUncaughtExceptionHandler(exceptionHandler)
+            }
+
+
+            /*Thread.getAllStackTraces()
+            Thread.getAllStackTraces().keys.forEach {
+                val previous = it.uncaughtExceptionHandler
+                if (previous == null || previous is ThreadGroup) {
+                    it.uncaughtExceptionHandler = exceptionHandler
+                }
+            }*/
+            preFX?.invoke(this@App)
         }
-
-
-        /*Thread.getAllStackTraces()
-        Thread.getAllStackTraces().keys.forEach {
-            val previous = it.uncaughtExceptionHandler
-            if (previous == null || previous is ThreadGroup) {
-                it.uncaughtExceptionHandler = exceptionHandler
-            }
-        }*/
-        preFX?.invoke(this)
     }
 
     val port by lazy {

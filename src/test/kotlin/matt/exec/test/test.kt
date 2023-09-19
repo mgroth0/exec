@@ -2,10 +2,10 @@ package matt.exec.test
 
 
 import matt.exec.app.App
-import matt.test.JupiterTestAssertions.assertRunsInOneMinute
+import matt.test.Tests
 import kotlin.test.Test
 
-class ExecTests {
+class ExecTests : Tests() {
     @Test
     fun constructClasses() = assertRunsInOneMinute {
         App()

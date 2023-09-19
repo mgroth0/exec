@@ -7,7 +7,7 @@ import matt.lang.require.requireOne
 import matt.reflect.NoArgConstructor
 import matt.reflect.scan.annotatedMattKTypes
 import matt.reflect.scan.mattSubClasses
-import matt.reflect.scan.systemScanner
+import matt.reflect.scan.systemScope
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
@@ -15,7 +15,7 @@ import kotlin.reflect.full.hasAnnotation
 
 internal fun startInitValidator() {
     daemon(name = "initValidator") {
-        with(systemScanner().usingClassGraph()) {
+        with(systemScope().usingClassGraph()) {
             InitValidator::class.mattSubClasses().forEach { validator ->
                 require(validator.hasAnnotation<NoArgConstructor>()) {
                     "Validators should have @NoArgConstructor, $validator does not"

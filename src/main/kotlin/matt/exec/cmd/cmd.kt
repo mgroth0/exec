@@ -4,15 +4,18 @@ import matt.exec.app.App
 import matt.exec.cmd.CommandLineApp.Companion.exitCommands
 import matt.lang.go
 import matt.lang.require.requireEmpty
+import matt.lang.shutdown.ShutdownContext
 import matt.lang.whileTrue
 import matt.log.taball
 
+context(ShutdownContext)
 class CommandLineApp(
     val welcomeMessage: String? = null,
     mainPrompt: String,
     private val cfg: (() -> Unit)? = null,
-    private val cmdDSL: CommandLineApp.() -> Unit
-) : App<CommandLineApp>() {
+    private val cmdDSL: CommandLineApp.() -> Unit,
+
+    ) : App<CommandLineApp>() {
 
     fun start(
         shutdown: (App<*>.() -> Unit)? = null,

@@ -1,7 +1,8 @@
 package matt.exec.exception
 
-import matt.file.MFile
+import matt.lang.model.file.FsFile
 import matt.file.commons.LogContext
+import matt.file.ext.getNextSubIndexedFileWork
 import matt.log.profile.err.ExceptionResponse
 import matt.log.profile.err.StructuredExceptionHandler
 import matt.model.code.errreport.Report
@@ -9,7 +10,7 @@ import matt.model.code.errreport.Report
 class AppUncaughtExceptionHandler(
     private val logContext: LogContext,
     val extraShutdownHook: ((
-        t: Thread, e: Throwable, shutdown: (() -> Unit)?, st: String, exceptionFile: MFile
+        t: Thread, e: Throwable, shutdown: (() -> Unit)?, st: String, exceptionFile: FsFile
     ) -> ExceptionResponse),
     val shutdown: (() -> Unit)? = null,
 
