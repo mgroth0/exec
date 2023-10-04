@@ -1,7 +1,7 @@
 package matt.exec.exception
 
 import matt.file.commons.LogContext
-import matt.file.ext.getNextSubIndexedFileWork
+import matt.file.ext.weird.getNextSubIndexedFile
 import matt.lang.model.file.FsFile
 import matt.log.profile.err.ExceptionResponse
 import matt.log.profile.err.StructuredExceptionHandler
@@ -34,7 +34,7 @@ class AppUncaughtExceptionHandler(
 
         exceptionFolder.mkdirs()
         val exceptionFile by lazy {
-            exceptionFolder.getNextSubIndexedFileWork("exception.txt", 100)()
+            exceptionFolder.getNextSubIndexedFile("exception.txt", 100)
         }
 
         println("writing error log to $exceptionFile")

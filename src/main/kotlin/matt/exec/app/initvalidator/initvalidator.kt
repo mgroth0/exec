@@ -15,7 +15,7 @@ import kotlin.reflect.full.hasAnnotation
 
 internal fun startInitValidator() {
     daemon(name = "initValidator") {
-        with(systemScope().usingClassGraph()) {
+        with(systemScope(includePlatformClassloader=false).usingClassGraph()) {
             InitValidator::class.mattSubClasses().forEach { validator ->
                 require(validator.hasAnnotation<NoArgConstructor>()) {
                     "Validators should have @NoArgConstructor, $validator does not"
