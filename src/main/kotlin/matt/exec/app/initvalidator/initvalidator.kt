@@ -3,7 +3,7 @@ package matt.exec.app.initvalidator
 import matt.async.thread.daemon
 import matt.exec.app.InitValidator
 import matt.exec.app.ValidatedOnInit
-import matt.lang.require.requireOne
+import matt.lang.assertions.require.requireOne
 import matt.reflect.NoArgConstructor
 import matt.reflect.scan.annotatedMattKTypes
 import matt.reflect.scan.mattSubClasses

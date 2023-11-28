@@ -3,13 +3,14 @@ package matt.exec.app
 import matt.async.thread.TheThreadProvider
 import matt.exec.app.initvalidator.startInitValidator
 import matt.exec.exception.AppUncaughtExceptionHandler
-import matt.lang.model.file.FsFile
 import matt.file.commons.DATA_FOLDER
 import matt.file.commons.LogContext
 import matt.file.commons.hasFullFileAccess
 import matt.file.commons.mattLogContext
 import matt.lang.go
-import matt.lang.shutdown.ShutdownContext
+import matt.lang.model.file.FsFile
+import matt.lang.shutdown.CancellableShutdownTask
+import matt.lang.shutdown.MyShutdownContext
 import matt.lang.shutdown.ShutdownExecutorImpl
 import matt.lang.shutdown.preaper.ProcessReaper
 import matt.lang.shutdown.preaper.ProcessReaperImpl
@@ -43,11 +44,11 @@ fun contextForMainOnly() =
 
 val myDataFolder by lazy { DATA_FOLDER[modID.appName] }
 
-context(ShutdownContext)
+context(MyShutdownContext<CancellableShutdownTask>)
 open class App<A : App<A>>(
     val requiresBluetooth: Boolean = false,
 ) {
-    val processReaper = ProcessReaperImpl(TheThreadProvider, this@ShutdownContext)
+    val processReaper = ProcessReaperImpl(TheThreadProvider, this@MyShutdownContext)
 
     companion object {
         protected var flowApp: App<*>? = null
