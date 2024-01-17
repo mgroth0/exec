@@ -17,46 +17,28 @@ import matt.lang.shutdown.preaper.ProcessReaperImpl
 import matt.log.logger.Logger
 import matt.log.profile.err.ExceptionResponse
 import matt.model.code.report.Reporter
-import matt.model.code.vals.portreg.PortRegistry
 import matt.model.data.release.Version
-import matt.rstruct.modID
+import matt.rstruct.modId
 import matt.shell.context.DefaultMacExecutionContext
 import matt.shell.context.withReaper
 import matt.shell.shell
-import matt.socket.port.Port
-import kotlin.reflect.KClass
 
 context(ProcessReaper)
 fun bluetoothIsOn() = "State: On" in shell("/usr/sbin/system_profiler", "SPBluetoothDataType")
 
 val myVersion: Version by lazy {
-
-
-    /*Version(extractMdValue(mdText = resourceTxt(CHANGELIST_MD)!!, key = "VERSION")!!)*/
-
-
-    modID.version
-
-
+    modId.version
 }
-fun contextForMainOnly() =
-    DefaultMacExecutionContext.withReaper(ProcessReaperImpl(TheThreadProvider, ShutdownExecutorImpl()))
 
-val myDataFolder by lazy { DATA_FOLDER[modID.appName] }
+fun contextForMainOnly() = DefaultMacExecutionContext.withReaper(ProcessReaperImpl(TheThreadProvider, ShutdownExecutorImpl()))
+
+val myDataFolder by lazy { DATA_FOLDER[modId.appName] }
 
 context(MyShutdownContext<CancellableShutdownTask>)
-open class App<A : App<A>>(
+open class App(
     val requiresBluetooth: Boolean = false,
 ) {
-    val processReaper = ProcessReaperImpl(TheThreadProvider, this@MyShutdownContext)
 
-    companion object {
-        protected var flowApp: App<*>? = null
-    }
-
-    init {
-        flowApp = this
-    }
 
     fun requireAccessToDownloadsAndDesktopFolders() {
         require(hasFullFileAccess()) {
@@ -68,7 +50,7 @@ open class App<A : App<A>>(
     open fun extraShutdownHook(
         t: Thread,
         e: Throwable,
-        shutdown: (App<*>.() -> Unit)? = null,
+        shutdown: (App.() -> Unit)? = null,
         st: String,
         exceptionFile: FsFile
     ): ExceptionResponse {
@@ -78,13 +60,14 @@ open class App<A : App<A>>(
 
 
     protected fun main(
-        shutdown: (App<*>.() -> Unit)? = null,
-        preFX: (App<*>.() -> Unit)? = null,
+        shutdown: (App.() -> Unit)? = null,
+        preFX: (App.() -> Unit)? = null,
         cfg: (() -> Unit)? = null,
         logContext: LogContext = mattLogContext,
         t: Reporter? = null,
         enableExceptionAndShutdownHandlers: Boolean = true
     ) {
+        val processReaper = ProcessReaperImpl(TheThreadProvider, this@MyShutdownContext)
         with(processReaper) {
             (t as? Logger)?.info("Kotlin Version = ${KotlinVersion.CURRENT}")
             if (requiresBluetooth) {
@@ -115,40 +98,30 @@ open class App<A : App<A>>(
 
                 Thread.setDefaultUncaughtExceptionHandler(exceptionHandler)
             }
-
-
-            /*Thread.getAllStackTraces()
-            Thread.getAllStackTraces().keys.forEach {
-                val previous = it.uncaughtExceptionHandler
-                if (previous == null || previous is ThreadGroup) {
-                    it.uncaughtExceptionHandler = exceptionHandler
-                }
-            }*/
             preFX?.invoke(this@App)
         }
     }
 
-    val port by lazy {
-        val p = when (modID.appName) {
-            "task"       -> PortRegistry.task
-            "top"        -> PortRegistry.top
-            "notify"     -> PortRegistry.notify
-            "launch"     -> PortRegistry.launch
-            "brainstorm" -> PortRegistry.brainstorm
-            "kjg"        -> PortRegistry.kjg
-            "pdf"        -> PortRegistry.pdf
-            "spotify"    -> PortRegistry.spotify
-            "fxgui"      -> PortRegistry.omniFxGui
-            else         -> error("need to configure port for ${modID.appName}")
-        }
-        Port(p)
-    }
+//    val port by lazy {
+//        val p = when (modId.appName) {
+//            "task"       -> PortRegistry.task
+//            "top"        -> PortRegistry.top
+//            "notify"     -> PortRegistry.notify
+//            "launch"     -> PortRegistry.launch
+//            "brainstorm" -> PortRegistry.brainstorm
+//            "kjg"        -> PortRegistry.kjg
+//            "pdf"        -> PortRegistry.pdf
+//            "spotify"    -> PortRegistry.spotify
+//            "fxgui"      -> PortRegistry.omniFxGui
+//            else         -> error("need to configure port for ${modId.appName}")
+//        }
+//        Port(p)
+//    }
 
 }
 
 
-interface InitValidator {
-    fun validate(): Boolean
-}
 
-annotation class ValidatedOnInit(val by: KClass<out InitValidator>)
+
+
+

@@ -19,7 +19,7 @@
     {
       "type": "Project",
       "cfg": "api",
-      "path": ":k:socket"
+      "path": ":k:shell"
     },
     {
       "type": "Project",
