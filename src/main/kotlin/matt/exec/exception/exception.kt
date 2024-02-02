@@ -14,7 +14,7 @@ class AppUncaughtExceptionHandler(
     ) -> ExceptionResponse),
     val shutdown: (() -> Unit)? = null,
 
-    ) : StructuredExceptionHandler() {
+) : StructuredExceptionHandler() {
 
 
     override fun handleException(
@@ -23,7 +23,7 @@ class AppUncaughtExceptionHandler(
         report: Report
     ): ExceptionResponse {
         println("handException1")
-        println("handException1.5: ${t},${e},${e.message}")
+        println("handException1.5: $t,$e,${e.message}")
         e.printStackTrace()
         report.print()
         println("handException2")

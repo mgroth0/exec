@@ -16,7 +16,7 @@ class CommandLineApp(
     private val cfg: (() -> Unit)? = null,
     private val cmdDSL: CommandLineApp.() -> Unit,
 
-    ) : App() {
+) : App() {
 
     fun start(
         shutdown: (App.() -> Unit)? = null,
