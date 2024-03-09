@@ -3,23 +3,22 @@ package matt.exec.cmd
 import matt.exec.app.App
 import matt.exec.cmd.CommandLineApp.Companion.exitCommands
 import matt.lang.assertions.require.requireEmpty
-import matt.lang.go
-import matt.lang.shutdown.CancellableShutdownTask
-import matt.lang.shutdown.MyShutdownContext
-import matt.lang.whileTrue
+import matt.lang.common.go
+import matt.lang.common.whileTrue
+import matt.lang.shutdown.TypicalShutdownContext
 import matt.log.taball
 
-context(MyShutdownContext<CancellableShutdownTask>)
+context(TypicalShutdownContext)
 class CommandLineApp(
     val welcomeMessage: String? = null,
     mainPrompt: String,
     private val cfg: (() -> Unit)? = null,
-    private val cmdDSL: CommandLineApp.() -> Unit,
+    private val cmdDSL: CommandLineApp.() -> Unit
 
 ) : App() {
 
     fun start(
-        shutdown: (App.() -> Unit)? = null,
+        shutdown: (App.() -> Unit)? = null
     ) {
         welcomeMessage?.go { println(it) }
         main(

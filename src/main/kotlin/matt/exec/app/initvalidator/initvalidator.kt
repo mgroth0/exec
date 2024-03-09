@@ -2,10 +2,11 @@ package matt.exec.app.initvalidator
 
 import matt.async.thread.daemon
 import matt.lang.assertions.require.requireOne
-import matt.reflect.NoArgConstructor
+import matt.reflect.j.NoArgConstructor
 import matt.reflect.scan.annotatedMattKTypes
+import matt.reflect.scan.jcommon.systemScope
+import matt.reflect.scan.jcommon.usingClassGraph
 import matt.reflect.scan.mattSubClasses
-import matt.reflect.scan.systemScope
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
@@ -21,7 +22,7 @@ annotation class ValidatedOnInit(val by: KClass<out InitValidator>)
 
 internal fun startInitValidator() {
     daemon(name = "initValidator") {
-        with(systemScope(includePlatformClassloader=false).usingClassGraph()) {
+        with(systemScope(includePlatformClassloader = false).usingClassGraph()) {
             InitValidator::class.mattSubClasses().forEach { validator ->
                 require(validator.hasAnnotation<NoArgConstructor>()) {
                     "Validators should have @NoArgConstructor, $validator does not"
@@ -38,5 +39,4 @@ internal fun startInitValidator() {
             }
         }
     }
-
 }

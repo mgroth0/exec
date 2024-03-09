@@ -1,18 +1,24 @@
 package matt.exec.exception
 
-import matt.file.commons.LogContext
+import matt.file.commons.logctx.LogContext
 import matt.file.ext.weird.getNextSubIndexedFile
 import matt.lang.model.file.FsFile
 import matt.log.profile.err.ExceptionResponse
 import matt.log.profile.err.StructuredExceptionHandler
-import matt.model.code.errreport.Report
+import matt.model.code.errreport.common.Report
 
 class AppUncaughtExceptionHandler(
     private val logContext: LogContext,
-    val extraShutdownHook: ((
-        t: Thread, e: Throwable, shutdown: (() -> Unit)?, st: String, exceptionFile: FsFile
-    ) -> ExceptionResponse),
-    val shutdown: (() -> Unit)? = null,
+    val extraShutdownHook: (
+    (
+        t: Thread,
+        e: Throwable,
+        shutdown: (() -> Unit)?,
+        st: String,
+        exceptionFile: FsFile
+    ) -> ExceptionResponse
+    ),
+    val shutdown: (() -> Unit)? = null
 
 ) : StructuredExceptionHandler() {
 
@@ -50,8 +56,6 @@ class AppUncaughtExceptionHandler(
         println("done possibly invoking shutdown in handleException")
         return response
     }
-
-
 }
 
 
