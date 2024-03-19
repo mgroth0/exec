@@ -13,7 +13,6 @@ import matt.lang.shutdown.MyShutdownContext
 import matt.lang.shutdown.RushableShutdownTask
 import matt.lang.shutdown.j.ShutdownExecutorImpl
 import matt.lang.shutdown.preaper.ProcessReaper
-import matt.lang.shutdown.preaper.ProcessReaperImpl
 import matt.log.logger.Logger
 import matt.log.profile.err.ExceptionResponse
 import matt.model.code.report.Reporter
@@ -21,6 +20,7 @@ import matt.model.data.release.Version
 import matt.rstruct.desktop.modId
 import matt.shell.common.context.DefaultMacExecutionContext
 import matt.shell.commonj.context.withReaper
+import matt.shell.preaper.ProcessReaperImpl
 import matt.shell.shell
 
 context(ProcessReaper)
